@@ -8,3 +8,4 @@ license.workspace = true
 workspace = true
 
 [dependencies]
+protocol = { version = "0.1.0", path = "../protocol" }
