@@ -1,0 +1,22 @@
+# Development config: per-user paths, run with
+#   cargo run -p aiosd -- --config config/dev.toml
+agent = "fake"
+
+[ai]
+endpoint    = "http://127.0.0.1:8080/v1"
+model       = "REPLACE_ME"
+api_key_env = "AIOS_API_KEY"
+timeout_ms  = 30000
+
+[paths]
+socket   = "$XDG_RUNTIME_DIR/aios/aiosd.sock"
+audit    = "$HOME/.local/share/aios/audit.log"
+notes    = "$HOME/.local/share/aios/notes"
+read_roots = ["$HOME/.local/share/aios/user"]
+shell    = "shell"
+
+[policy]
+default = "ask"
+
+[shell]
+listen = "127.0.0.1:7700"
