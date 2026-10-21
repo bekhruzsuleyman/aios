@@ -1,0 +1,21 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/protocol",
+    "crates/tracer",
+    "crates/broker",
+    "crates/actions",
+    "crates/aiosd",
+]
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+license = "MIT"
+
+[workspace.lints.rust]
+unsafe_code = "warn"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
