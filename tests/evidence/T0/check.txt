@@ -1,0 +1,112 @@
+    Checking protocol v0.1.0 (/home/claude/aios/crates/protocol)
+    Checking actions v0.1.0 (/home/claude/aios/crates/actions)
+    Checking aios-shell v0.1.0 (/home/claude/aios/crates/shell)
+    Checking tracer v0.1.0 (/home/claude/aios/crates/tracer)
+    Checking aiosd v0.1.0 (/home/claude/aios/crates/aiosd)
+    Checking aios-testkit v0.1.0 (/home/claude/aios/tests/testkit)
+    Checking client v0.1.0 (/home/claude/aios/crates/client)
+    Checking broker v0.1.0 (/home/claude/aios/crates/broker)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.70s
+   Compiling tracer v0.1.0 (/home/claude/aios/crates/tracer)
+   Compiling broker v0.1.0 (/home/claude/aios/crates/broker)
+   Compiling client v0.1.0 (/home/claude/aios/crates/client)
+   Compiling actions v0.1.0 (/home/claude/aios/crates/actions)
+   Compiling protocol v0.1.0 (/home/claude/aios/crates/protocol)
+   Compiling aios-testkit v0.1.0 (/home/claude/aios/tests/testkit)
+   Compiling aios-shell v0.1.0 (/home/claude/aios/crates/shell)
+   Compiling aiosd v0.1.0 (/home/claude/aios/crates/aiosd)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.48s
+     Running unittests src/lib.rs (target/debug/deps/actions-f1b637abda76dd3a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/aios_shell-ecc45b4a287d8afa)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/aios_testkit-384a96327c8b0f56)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/aiosd-6ce9107385104746)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/broker-678838b57f833f2b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/client-bb65d630b5e37af1)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/protocol-67349cd70e951f4e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/debug/deps/tracer-3a3e600177cb8fca)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests actions
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests aios_testkit
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests broker
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests client
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests protocol
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests tracer
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+check-no-fake: OK
+ok: clean repo passes
+ok: caught html file
+ok: caught package.json
+ok: caught webview crate
+ok: caught FakeAgent in shipped source
+ok: caught node in image
+ok: caught testkit in image
+ok: caught kiosk browser in image
+guard self-test passed

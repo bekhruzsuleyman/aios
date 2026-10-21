@@ -1,1 +1,1 @@
-//! broker crate (filled in by later tasks).
+//! broker (implemented in a later task).

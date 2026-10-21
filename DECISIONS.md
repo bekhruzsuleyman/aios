@@ -1,24 +1,17 @@
 # Decisions
 
-Assumptions made while implementing the 0.1 plan. Each entry names the task it came from.
+One line per decision that the plan left open or that this build host forced. Newest at the bottom of each section.
 
-## T0
-- **Crate edition.** `cargo new` now defaults to edition 2024; every crate is pinned to 2021 via `[workspace.package]` as the plan requires.
-- **No unwrap/expect.** Enforced with workspace clippy lints (`unwrap_used`, `expect_used` = deny), relaxed in tests through `clippy.toml`. `main` uses `?`, so it needs no exception.
-- **check.sh** runs `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`. `--all-targets` so tests are linted too.
-- **Extra config keys.** `agent = "fake" | "real"` (T5 asks for it), `paths.shell` (where aiosd serves the shell from) and `[shell] listen` (the loopback WebSocket bridge, T3) were added to `config/aios.toml`.
+## T0: host and tooling
+- **Restart.** The branch first held work for an earlier plan (HTML shell, scripted agent). Bekhruz asked to start over with this plan; the T0 commit removes all of it. The old commits remain in history because a force push was not permitted from this session.
+- **Build host:** Ubuntu 24.04.5 cloud container, 4 CPUs, 15 GiB RAM, ~28 GB free, root, **no /dev/kvm** → QEMU runs with `-accel tcg`, boot timeouts ×10, all latency numbers are marked *emulated* (see BLOCKERS.md).
+- **Network policy of this host:** kernel.org, deb.debian.org, ftp.debian.org, security.debian.org, mozilla.org are unreachable (proxy 403 / DNS). Reachable: GitHub, crates.io, PyPI, archive.ubuntu.com. Consequences are listed in T1 and T3 below and in BLOCKERS.md.
+- **Package substitutions (section 4.2):** `systemd-boot` → `systemd-boot-efi` (Ubuntu splits the EFI binaries); `mkosi` from the distro is too old → mkosi **v25.3** installed from its GitHub tag into `build/venv` (mkosi is not on PyPI); added `fdisk` (sfdisk) explicitly.
+- **Tool versions:** gcc 13.3.0, GNU make 4.3, QEMU 8.2.2, mkfs.erofs 1.7.1, ukify 255.4, mkosi 25.3, cargo/rustc 1.97.0, bubblewrap 0.9.0, mtools 4.0.43, e2fsprogs 1.47.0, OVMF `/usr/share/OVMF/OVMF_CODE_4M.fd`.
+- **Guard self-test** lives in `tests/guard/test-check-no-fake.sh` and runs from `check.sh`.
+- **Lints:** `unwrap()`/`expect()` are denied workspace-wide by clippy (`unwrap_used`, `expect_used`) and allowed in tests via `clippy.toml`.
 
-## T1
-- **Requests vs. envelope fields.** Section 5 says every message has `ts_ns`, `task_id`, `seq`. That holds for events. Requests are plain JSON-RPC 2.0 (`jsonrpc`, `id`, `method`, `params`) because `task.start` has no task yet and the JSON-RPC id already orders responses.
-- **One connection, two kinds of lines.** Responses and events share the client connection, one JSON object per line. Clients tell them apart by the `jsonrpc` key (`protocol::ServerMsg` is an untagged enum).
-- **Event tag.** Events are internally tagged with `"type": "<snake_case name>"`, flattened next to `ts_ns`/`task_id`/`seq`.
-- **Monotonic clock.** `tracer::now_ns()` is nanoseconds since a process-wide `Instant` epoch (monotonic, no `unsafe`/libc). Timestamps are comparable within one aiosd process, not across processes.
-- **Unknown methods are rejected by deserialisation.** `Call` is a closed enum, so e.g. `shell.exec` cannot even be parsed as a request.
-
-## T2
-- **Event fan-out.** All clients receive the events of all tasks (a `tokio::sync::broadcast` channel); clients filter by `task_id`. Lagging clients drop events with a log line rather than blocking the daemon.
-- **Response before events.** A `task.start` task waits on a gate that is opened only after the response is queued, and the writer prefers responses (`biased` select), so a client always learns its `task_id` before the first event.
-- **Cancellation** aborts the task's tokio future (which drops any in-flight I/O), then emits `cancelled` and a `trace { stage: "cancel" }` with the time spent cancelling. After a terminal event (`result`, `error`, `cancelled`) the task's emitter is closed, so nothing (e.g. traces from stage guards dropped by the abort) can follow it.
-- **FakeAgent pacing.** Steps take 2–4 × a base unit (100 ms in the daemon, 5 ms in tests); planning takes 3 units.
-- **Per-task timeline** is printed to stderr when a task ends, and every stage is also streamed as a `trace` event.
-- **Dev config.** `config/dev.toml` uses `$XDG_RUNTIME_DIR` / `$HOME` paths; aiosd expands a leading `$XDG_RUNTIME_DIR` or `$HOME` in path settings. Default config path is `/etc/aios/aios.toml`, overridden with `--config`.
+## T1: kernel
+- **Version: Linux 6.18.58** (2026-10-21), newest point release of the newest longterm series (6.18). kernel.org's `releases.json` is unreachable here, so `scripts/10-kernel-fetch.sh` falls back to the pinned LTS series (`LTS_SERIES=6.18`) and takes the newest tag from the stable-tree mirror `github.com/gregkh/linux`.
+- **Source integrity:** without kernel.org there is no `sha256sums.asc`; the source is a shallow git clone of tag `v6.18.58`, commit `2926d88bb7fc4608fd942453d929c39e4e5ec006`, recorded in `third_party/KERNEL_SOURCE`. When kernel.org is reachable the script uses the tarball and sha256 check as the plan specifies.
+- **Fragment addition:** `CONFIG_BPF_SYSCALL=y`, because `CONFIG_CGROUP_BPF` depends on it and was otherwise dropped by olddefconfig.

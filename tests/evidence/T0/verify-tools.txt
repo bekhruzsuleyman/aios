@@ -1,0 +1,18 @@
+gcc: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+make: GNU Make 4.3
+bc: bc 1.07.1
+flex: flex 2.6.4
+bison: bison (GNU Bison) 3.8.2
+qemu: QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)
+mkfs.erofs: mkfs.erofs 1.7.1
+ukify: ukify 255 (255.4-1ubuntu8.18)
+mkosi: mkosi 25.3
+cargo: cargo 1.97.0 (c980f4866 2026-06-30)
+rustc: rustc 1.97.0 (2d8144b78 2026-07-07)
+bwrap: bubblewrap 0.9.0
+sfdisk: sfdisk from util-linux 2.39.3
+mcopy: mcopy (GNU mtools) 4.0.43
+mkfs.ext4: mke2fs 1.47.0 (5-Feb-2023)
+ovmf: /usr/share/OVMF/OVMF_CODE_4M.fd
+systemd-boot: /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+uki stub: /usr/lib/systemd/boot/efi/linuxx64.efi.stub

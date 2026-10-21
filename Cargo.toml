@@ -3,9 +3,12 @@ resolver = "2"
 members = [
     "crates/protocol",
     "crates/tracer",
+    "crates/client",
     "crates/broker",
     "crates/actions",
     "crates/aiosd",
+    "crates/shell",
+    "tests/testkit",
 ]
 
 [workspace.package]
@@ -19,3 +22,7 @@ unsafe_code = "warn"
 [workspace.lints.clippy]
 unwrap_used = "deny"
 expect_used = "deny"
+
+[profile.release]
+lto = "thin"
+codegen-units = 4

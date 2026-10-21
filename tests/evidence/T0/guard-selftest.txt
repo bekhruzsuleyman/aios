@@ -1,0 +1,9 @@
+ok: clean repo passes
+ok: caught html file
+ok: caught package.json
+ok: caught webview crate
+ok: caught FakeAgent in shipped source
+ok: caught node in image
+ok: caught testkit in image
+ok: caught kiosk browser in image
+guard self-test passed
