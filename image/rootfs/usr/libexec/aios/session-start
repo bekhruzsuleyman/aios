@@ -1,0 +1,4 @@
+#!/bin/sh
+# Run by labwc once the compositor is up. Records the boot milestone used
+# by the boot timeline (tests/boot) and nothing else.
+echo "aios: compositor ready uptime=$(cut -d' ' -f1 /proc/uptime)" | systemd-cat -t aios-session

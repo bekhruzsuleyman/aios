@@ -1,0 +1,8 @@
+# PAM stack for aios-session.service (the desktop session on tty1).
+# Only the session service uses this name; it does not authenticate users.
+auth     required pam_permit.so
+account  required pam_permit.so
+session  required pam_loginuid.so
+session  required pam_env.so
+session  required pam_limits.so
+session  required pam_systemd.so

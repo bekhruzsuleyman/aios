@@ -1,0 +1,13 @@
+# Package sources for the image build. All HTTPS: this build host's proxy
+# refuses plain-HTTP apt (mkosi's default for the security pocket).
+Types: deb
+URIs: https://archive.ubuntu.com/ubuntu
+Suites: noble noble-updates
+Components: main universe
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: https://security.ubuntu.com/ubuntu
+Suites: noble-security
+Components: main universe
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg

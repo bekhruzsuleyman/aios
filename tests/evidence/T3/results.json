@@ -1,0 +1,11 @@
+{
+  "accel": "tcg (emulated)",
+  "host_seconds_to_serial_shell": 66.2,
+  "systemd_analyze": "Startup finished in 6.442s (kernel) + 38.335s (userspace) = 44.777s",
+  "compositor_ready_uptime_s": 55.5,
+  "shell_started_uptime_s": 57.242722,
+  "boot_png_colours": 3117,
+  "window_png_colours": 3591,
+  "foot_running": true,
+  "pass": true
+}

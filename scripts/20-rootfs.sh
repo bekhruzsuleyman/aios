@@ -46,6 +46,11 @@ mkdir -p build/rootfs-test/etc/systemd/system/getty.target.wants
 ln -sf /usr/lib/systemd/system/serial-getty@.service \
   build/rootfs-test/etc/systemd/system/getty.target.wants/serial-getty@ttyS0.service
 echo "aios-test" > build/rootfs-test/etc/aios/TEST_IMAGE
+# Test-only helpers (tests/testkit) go into the test tree only.
+if [ -x target/release/aios-testkit-events ]; then
+  install -D -m 0755 target/release/aios-testkit-events \
+    build/rootfs-test/usr/local/libexec/aios-test/aios-testkit-events
+fi
 
 # 4. Anti-fake guard on the product tree, then pack both read-only.
 scripts/check-no-fake.sh --rootfs build/rootfs

@@ -1,0 +1,28 @@
+[Unit]
+Description=AiOS desktop session (labwc + aios-shell)
+After=systemd-user-sessions.service seatd.service systemd-logind.service
+Wants=seatd.service
+Conflicts=getty@tty1.service
+# Never wait for the network: the desktop comes first.
+
+[Service]
+Type=simple
+User=aios
+PAMName=aios-session
+WorkingDirectory=~
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+StandardInput=tty-fail
+StandardOutput=journal
+StandardError=journal
+UtmpIdentifier=tty1
+UtmpMode=user
+Environment=XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=labwc:wlroots
+ExecStart=/usr/bin/labwc -C /etc/aios/labwc -s /usr/libexec/aios/session-start
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=graphical.target

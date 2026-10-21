@@ -1,0 +1,76 @@
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "UEFI Misc Device" from PciRoot(0x0)/Pci(0x6,0x0)
+BdsDxe: starting Boot0001 "UEFI Misc Device" from PciRoot(0x0)/Pci(0x6,0x0)
+
+Ubuntu 24.04.5 LTS aios ttyS0
+
+aios login: root (automatic login)
+
+Welcome to Ubuntu 24.04.5 LTS (GNU/Linux 6.18.58 x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+[?2004hroot@aios:~# stty -echo; export PS1='' TERM=dumb; unset PROMPT_COMMAND
+[?2004lB42ed7084
+E42ed7084 0
+B0738ab74
+227
+E0738ab74 0
+B0e7edc56
+6.18.58
+E0e7edc56 0
+Bcbe27b05
+active
+Ecbe27b05 0
+B23e5e3d5
+227
+E23e5e3d5 0
+B1d1e444b
+erofs  ro,relatime,user_xattr,acl,cache_strategy=readaround
+E1d1e444b 0
+Bb042b896
+/dev/vda3 ext4
+Eb042b896 0
+B3ac3a900
+aios
+E3ac3a900 0
+Bb2f53432
+touch: cannot touch '/usr/x': Read-only file system
+rc=1
+Eb2f53432 0
+Bf2a807a3
+Startup finished in 6.442s (kernel) + 38.335s (userspace) = 44.777s 
+Ef2a807a3 0
+B990202ae
+aios: compositor ready uptime=55.50
+E990202ae 0
+B39097c08
+[   57.242722] aios aios-shell[296]: aios-shell: started
+E39097c08 0
+B13995bb7
+[1] 324
+E13995bb7 0
+B251aa132
+E251aa132 1
+B3bcb6e90
+327
+E3bcb6e90 0
+B8d6c8cd6
+327
+E8d6c8cd6 0

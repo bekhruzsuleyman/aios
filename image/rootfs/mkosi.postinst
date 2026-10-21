@@ -1,0 +1,28 @@
+#!/bin/sh
+# Runs after packages are installed (inside mkosi's sandbox; mkosi-chroot
+# enters the image). Creates users and enables/masks units at build time,
+# because the root filesystem is read-only at runtime.
+set -eu
+
+mkosi-chroot sh -eu <<'CHROOT'
+getent group render >/dev/null || groupadd -r render
+getent group seat >/dev/null || groupadd -r seat
+id aios >/dev/null 2>&1 || useradd -u 1000 -m -d /home/aios -s /bin/sh -G video,input,render,audio,seat aios
+id aiosd >/dev/null 2>&1 || useradd -r -d /nonexistent -s /usr/sbin/nologin aiosd
+passwd -l aios >/dev/null
+
+for u in seatd.service systemd-networkd.service systemd-resolved.service aios-session.service aiosd.service; do
+  [ -e "/usr/lib/systemd/system/$u" ] && systemctl enable "$u"
+done
+systemctl set-default graphical.target
+for u in apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service \
+         man-db.timer man-db.service e2scrub_all.timer e2scrub_reap.service \
+         getty@tty1.service getty@tty2.service getty@tty3.service getty@tty4.service \
+         getty@tty5.service getty@tty6.service motd-news.timer systemd-networkd-wait-online.service \
+         fstrim.timer dpkg-db-backup.timer; do
+  systemctl mask "$u" >/dev/null 2>&1 || true
+done
+ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+# /var is a tmpfs at runtime, so keep the font cache under /usr.
+fc-cache -s -f >/dev/null 2>&1 || true
+CHROOT

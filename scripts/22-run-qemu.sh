@@ -9,8 +9,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 IMG=${1:-build/aios.img}
 ACCEL=${ACCEL:-$([ -w /dev/kvm ] && echo kvm || echo tcg)}
-OVMF_CODE=$(ls /usr/share/OVMF/OVMF_CODE_4M.fd /usr/share/OVMF/OVMF_CODE.fd 2>/dev/null | head -1)
-OVMF_VARS_SRC=$(ls /usr/share/OVMF/OVMF_VARS_4M.fd /usr/share/OVMF/OVMF_VARS.fd 2>/dev/null | head -1)
+OVMF_CODE=$(ls /usr/share/OVMF/OVMF_CODE_4M.fd /usr/share/OVMF/OVMF_CODE.fd 2>/dev/null | head -1 || true)
+OVMF_VARS_SRC=$(ls /usr/share/OVMF/OVMF_VARS_4M.fd /usr/share/OVMF/OVMF_VARS.fd 2>/dev/null | head -1 || true)
 VARS=build/OVMF_VARS-$(basename "$IMG" .img).fd
 [ -f "$VARS" ] || cp "$OVMF_VARS_SRC" "$VARS"
 

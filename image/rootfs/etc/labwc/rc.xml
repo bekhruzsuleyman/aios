@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- AiOS: fixed compositor configuration. Not user-editable. -->
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+    <gap>8</gap>
+  </core>
+  <theme>
+    <name>aios</name>
+    <cornerRadius>10</cornerRadius>
+    <font place="ActiveWindow"><name>Inter</name><size>10</size></font>
+    <font place="InactiveWindow"><name>Inter</name><size>10</size></font>
+  </theme>
+  <desktops number="1" />
+  <placement><policy>center</policy></placement>
+  <keyboard>
+    <!-- Only these three bindings exist; defaults are not loaded. -->
+    <keybind key="W-space"><action name="Execute" command="aios-shell --toggle-palette" /></keybind>
+    <keybind key="A-F4"><action name="Close" /></keybind>
+    <keybind key="W-Tab"><action name="NextWindow" /></keybind>
+  </keyboard>
+  <mouse>
+    <default />
+  </mouse>
+</labwc_config>

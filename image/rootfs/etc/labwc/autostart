@@ -1,0 +1,2 @@
+# Started by labwc after the compositor is up.
+[ -x /usr/bin/aios-shell ] && /usr/bin/aios-shell 2>&1 | systemd-cat -t aios-shell &

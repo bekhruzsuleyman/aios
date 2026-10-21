@@ -1,0 +1,22 @@
+# AiOS window theme: light, calm, matches the shell. Traffic-light buttons
+# are approximated with coloured close/max/iconify glyphs.
+border.width: 1
+padding.height: 6
+titlebar.height: 28
+window.active.border.color: #d9dbe6
+window.inactive.border.color: #e6e8ef
+window.active.title.bg.color: #f7f7fb
+window.inactive.title.bg.color: #eef0f5
+window.active.label.text.color: #2b2e3a
+window.inactive.label.text.color: #8a8fa3
+window.label.text.justify: center
+window.active.button.unpressed.image.color: #2b2e3a
+window.inactive.button.unpressed.image.color: #b0b4c4
+window.active.button.close.unpressed.image.color: #ff5f57
+window.active.button.max.unpressed.image.color: #28c840
+window.active.button.iconify.unpressed.image.color: #febc2e
+menu.items.bg.color: #f7f7fb
+menu.items.text.color: #2b2e3a
+osd.bg.color: #f7f7fb
+osd.border.color: #d9dbe6
+osd.label.text.color: #2b2e3a

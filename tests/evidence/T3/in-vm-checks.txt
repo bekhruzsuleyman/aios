@@ -1,0 +1,28 @@
+$ uname -r
+6.18.58
+=> PASS
+
+$ systemctl is-active aios-session
+active
+=> PASS
+
+$ pgrep -x labwc
+227
+=> PASS
+
+$ findmnt -n -o FSTYPE,OPTIONS /
+erofs  ro,relatime,user_xattr,acl,cache_strategy=readaround
+=> PASS
+
+$ findmnt -n -o SOURCE,FSTYPE /var/lib/aios
+/dev/vda3 ext4
+=> PASS
+
+$ stat -c %U /var/lib/aios/notes
+aios
+=> PASS
+
+$ touch /usr/x 2>&1; echo rc=$?
+touch: cannot touch '/usr/x': Read-only file system
+rc=1
+=> PASS

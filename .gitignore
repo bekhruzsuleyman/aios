@@ -2,3 +2,5 @@ target/
 logs/
 third_party/
 build/
+__pycache__/
+target-wt/

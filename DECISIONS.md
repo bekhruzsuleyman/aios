@@ -24,3 +24,10 @@ One line per decision that the plan left open or that this build host forced. Ne
 - **client** uses std threads and blocking sockets (no async runtime) so the Wayland shell can embed it; it reconnects with backoff 100 ms → 2 s and delivers `Connected`/`Disconnected`/`Response`/`Event` to a sink callback. `approval.respond` always goes to the approval socket on a short-lived connection.
 - **Build time:** ~25 min for `bzImage` on 4 vCPUs with ccache cold. `scripts/14-kernel-smoke.sh` added for the smoke boot (plan 6.4).
 - **Active LSMs** at boot: `capability,landlock` (the requested `lockdown`, `yama` are not built by defconfig; `CONFIG_LSM` lists them harmlessly).
+
+## T3: rootfs, disk, boot test
+- **Userland is Ubuntu 24.04 (noble), not Debian:** the Debian mirrors are unreachable from this host. mkosi builds it the same way (`Distribution=ubuntu`, main + universe, HTTPS sources in `mkosi.sandbox`).
+- **Browser is GNOME Web (`epiphany-browser`):** Ubuntu ships Firefox only as a snap, which cannot run on a read-only erofs root without snapd. Epiphany is a native Wayland browser from the archive. Everything that says "Firefox" in the plan uses `/usr/bin/epiphany-browser`.
+- **Writable state:** `/var`, `/tmp` and `/home` are tmpfs (fstab); persistent state lives only on the ext4 data partition `LABEL=aios-data` at `/var/lib/aios`. `x-systemd.device-timeout=120s` because emulated boots are slow.
+- **Test image variant:** `build/aios-test.img` adds root autologin on `ttyS0`, `/etc/aios/TEST_IMAGE` and the test-only event server; the shipped `build/aios.img` has none of these and `check-no-fake.sh --rootfs` verifies it.
+- **iwd** only starts when Wi-Fi hardware exists (`ConditionDirectoryNotEmpty=/sys/class/ieee80211`).
