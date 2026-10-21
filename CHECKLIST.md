@@ -11,3 +11,8 @@ Acceptance checks per task with the command used and a link to evidence.
 - [x] Round-trip tests for every message plus golden JSON fixtures. Command: `cargo test -p protocol` (6 unit + 4 golden). Evidence: [tests/evidence/T2/tests.txt](tests/evidence/T2/tests.txt)
 - [x] Tracer test prints a three-stage timeline. Command: `cargo test -p tracer -- --nocapture three_stage_timeline`. Evidence: [tests/evidence/T2/timeline.txt](tests/evidence/T2/timeline.txt)
 - [x] Client: request/response/event delivery, reconnect after the server goes away, approvals on the approval socket. Command: `cargo test -p client`
+
+## T1: Kernel
+- [x] `build/bzImage` exists: Linux 6.18.58 x86 boot executable. Evidence: [tests/evidence/T1/bzImage.txt](tests/evidence/T1/bzImage.txt)
+- [x] `scripts/12-kernel-verify-config.sh` exits 0 (74 symbols). Evidence: [tests/evidence/T1/verify-config.txt](tests/evidence/T1/verify-config.txt)
+- [x] QEMU smoke test reaches `Kernel panic - not syncing: VFS: Unable to mount root fs` (TCG, 7.7 s). Command: `scripts/14-kernel-smoke.sh`. Evidence: [tests/evidence/T1/smoke-boot.txt](tests/evidence/T1/smoke-boot.txt)

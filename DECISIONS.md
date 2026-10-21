@@ -22,3 +22,5 @@ One line per decision that the plan left open or that this build host forced. Ne
 - **Unknown methods** (e.g. `shell.exec`) fail to deserialise: `Call` is a closed enum.
 - **Monotonic clock:** `tracer::now_ns()` = ns since a process-wide `Instant` epoch; comparable within one process.
 - **client** uses std threads and blocking sockets (no async runtime) so the Wayland shell can embed it; it reconnects with backoff 100 ms → 2 s and delivers `Connected`/`Disconnected`/`Response`/`Event` to a sink callback. `approval.respond` always goes to the approval socket on a short-lived connection.
+- **Build time:** ~25 min for `bzImage` on 4 vCPUs with ccache cold. `scripts/14-kernel-smoke.sh` added for the smoke boot (plan 6.4).
+- **Active LSMs** at boot: `capability,landlock` (the requested `lockdown`, `yama` are not built by defconfig; `CONFIG_LSM` lists them harmlessly).

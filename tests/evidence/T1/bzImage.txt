@@ -1,0 +1,2 @@
+build/bzImage: Linux kernel x86 boot executable bzImage, version 6.18.58 (root@vm) #1 SMP PREEMPT_DYNAMIC Wed Oct 21 18:38:29 UTC 2026, RO-rootFS, swap_dev 0XE, Normal VGA
+git https://github.com/gregkh/linux tag v6.18.58 commit 2926d88bb7fc4608fd942453d929c39e4e5ec006
