@@ -1,0 +1,8 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "task.start",
+  "params": {
+    "text": "open YouTube and play lofi"
+  }
+}

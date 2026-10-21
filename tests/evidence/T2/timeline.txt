@@ -1,0 +1,5 @@
+stage            ms      cum ms
+route         2.099       2.099
+plan          5.116       7.215
+execute       5.205      12.420
+

@@ -9,3 +9,5 @@ publish = false
 workspace = true
 
 [dependencies]
+protocol = { version = "0.1.0", path = "../protocol" }
+serde_json = "1.0.154"

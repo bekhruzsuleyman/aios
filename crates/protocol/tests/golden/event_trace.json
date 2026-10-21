@@ -1,0 +1,8 @@
+{
+  "ts_ns": 1008,
+  "task_id": "0b7c7f8e-1111-4222-8333-444455556666",
+  "seq": 8,
+  "type": "trace",
+  "stage": "broker.decide",
+  "dt_ns": 4200
+}

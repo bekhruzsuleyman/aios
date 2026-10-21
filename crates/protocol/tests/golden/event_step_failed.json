@@ -1,0 +1,8 @@
+{
+  "ts_ns": 1003,
+  "task_id": "0b7c7f8e-1111-4222-8333-444455556666",
+  "seq": 3,
+  "type": "step_failed",
+  "step_id": "s2",
+  "reason": "denied by policy"
+}

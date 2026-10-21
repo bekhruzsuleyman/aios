@@ -1,0 +1,8 @@
+{
+  "ts_ns": 1002,
+  "task_id": "0b7c7f8e-1111-4222-8333-444455556666",
+  "seq": 2,
+  "type": "step_done",
+  "step_id": "s1",
+  "summary": "Opened browser"
+}

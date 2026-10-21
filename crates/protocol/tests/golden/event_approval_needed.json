@@ -1,0 +1,13 @@
+{
+  "ts_ns": 1004,
+  "task_id": "0b7c7f8e-1111-4222-8333-444455556666",
+  "seq": 4,
+  "type": "approval_needed",
+  "approval_id": "a1",
+  "step_id": "s3",
+  "action": "app.launch",
+  "args": {
+    "name": "terminal"
+  },
+  "risk": "ask"
+}
