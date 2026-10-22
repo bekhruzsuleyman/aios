@@ -1,6 +1,6 @@
 # State
 
-- **Current task:** T5 (aiosd daemon); T4 VM evidence pending.
-- **Last completed step:** T3 committed (boot test passes in QEMU/TCG).
-- **Next command:** `cargo test -p aiosd`, then rebuild the test image and capture shell/command evidence in the VM.
-- **Open problems:** no KVM (TCG only); Debian and kernel.org blocked (see BLOCKERS.md).
+- **Current task:** final report and pull request.
+- **Last completed step:** T4 to T8 verified in the VM (flow test, T7 suite 40/40, Wi-Fi picker, hardware variants) and committed.
+- **Next command:** none for 0.1; the remaining step is the human's physical-hardware boot (`docs/HARDWARE_TEST.md`). T9 (voice) was skipped.
+- **Open problems:** no KVM (latency numbers emulated), no internet inside the VM, no physical hardware (see BLOCKERS.md).

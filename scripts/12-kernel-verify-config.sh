@@ -18,5 +18,5 @@ for frag in "$ROOT/image/kernel/aios.fragment" "$@"; do
     fi
   done < "$frag"
 done
-[ $fail -eq 0 ] && echo "kernel config OK ($(grep -c . "$ROOT/image/kernel/aios.fragment") symbols checked)"
+[ $fail -eq 0 ] && echo "kernel config OK ($(cat "$ROOT/image/kernel/aios.fragment" "$@" | grep -cv -e "^#" -e "^$") symbols checked)"
 exit $fail

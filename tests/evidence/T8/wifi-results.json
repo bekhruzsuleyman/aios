@@ -1,0 +1,11 @@
+{
+  "accel": "tcg (emulated)",
+  "radios": "phy0  phy1",
+  "iwd_sees": "Available networks\u001b[1;90m                              \u001b[0m\n\u001b[90m--------------------------------------------------------------------------------\n\u001b[0m\u001b[1;90m      Network name                      Security            Signal\n\u001b[0m\u001b[90m--------------------------------------------------------------------------------\n\u001b[0m      AiOS-Test                         psk                 ****",
+  "list_colours": 5367,
+  "password_colours": 5361,
+  "station": "Station: wlan0\u001b[1;90m                                \u001b[0m\n\u001b[90m--------------------------------------------------------------------------------\n\u001b[0m\u001b[1;90m  Settable  Property              Value                                          \n\u001b[0m\u001b[90m--------------------------------------------------------------------------------\n\u001b[0m            Scanning              no                                               \n            State                 connecting                                       \n            Connected network     AiOS-Test                                        \n            No IP addresses       Is DHCP client configured?",
+  "connected_colours": 5439,
+  "connected": true,
+  "shell_log": "aios-shell: trace key_to_frame 778.92 ms\naios-shell: trace key_to_frame 972.38 ms\naios-shell: trace key_to_frame 884.28 ms\naios-shell: trace key_to_frame 330.39 ms\naios-shell: trace key_to_frame 380.98 ms\naios-shell: trace key_to_frame 481.06 ms\naios-shell: trace key_to_frame 407.35 ms\naios-shell: trace key_to_frame 338.57 ms\naios-shell: trace key_to_frame 40.17 ms\naios-shell: trace key_to_frame 475.85 ms\naios-shell: trace key_to_frame 322.92 ms\naios-shell: trace key_to_frame 355.24 ms\naios-shell: trace key_to_frame 345.52 ms\naios-shell: trace key_to_frame 400.76 ms\naios-shell: trace key_to_frame 338.70 ms\naios-shell: trace key_to_frame 361.80 ms\naios-shell: trace key_to_frame 30.89 ms\naios-shell: trace key_to_frame 342.42 ms\naios-shell: trace key_to_frame 342.88 ms\naios-shell: trace key_to_frame 920.11 ms"
+}

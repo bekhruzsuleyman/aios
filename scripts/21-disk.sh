@@ -2,6 +2,9 @@
 # T3b: assemble the bootable GPT disk images without loop mounts.
 #   build/aios.img       product image (no serial shell)
 #   build/aios-test.img  test image (root shell on ttyS0; never shipped)
+#   build/aios-usb.img   product image for a USB stick (T8): same layout; the
+#                        data partition grows to fill the stick on first boot
+#                        (systemd-repart + x-systemd.growfs)
 # Layout: ESP (FAT32, systemd-boot + UKI) | root (erofs, read-only) | data (ext4)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -12,7 +15,7 @@ DATA_PARTUUID=a1050000-0000-4000-8000-000000000003
 ESP_MB=256
 DATA_MB=${DATA_MB:-1024}
 SDBOOT=/usr/lib/systemd/boot/efi/systemd-bootx64.efi
-CMDLINE_BASE="root=PARTUUID=$ROOT_PARTUUID ro rootfstype=erofs quiet loglevel=3 printk.time=1 systemd.show_status=0"
+CMDLINE_BASE="root=PARTUUID=$ROOT_PARTUUID ro rootwait rootfstype=erofs quiet loglevel=3 printk.time=1 systemd.show_status=0"
 
 [ -f $B/bzImage ] || { echo "build/bzImage missing (run scripts/13-kernel-build.sh)" >&2; exit 1; }
 
@@ -59,8 +62,13 @@ SFDISK
   dd if="$rootfs" of="$out" bs=$SECTOR seek=$p2 conv=notrunc,sparse status=none
   dd if=$B/data.img of="$out" bs=$SECTOR seek=$p3 conv=notrunc,sparse status=none
   echo "$out: $(du -h --apparent-size "$out" | cut -f1)"
+  if [ "$variant" = usb ]; then
+    local max=$((14 * 1000 * 1000 * 1000))  # a "16 GB" stick holds ~14.9 GB
+    [ "$(stat -c %s "$out")" -lt "$max" ] || { echo "$out is too big for a 16 GB stick" >&2; exit 1; }
+  fi
 }
 
 make_image product $B/rootfs.erofs "$CMDLINE_BASE" $B/aios.img
+make_image usb $B/rootfs.erofs "$CMDLINE_BASE" $B/aios-usb.img
 make_image test $B/rootfs-test.erofs "$CMDLINE_BASE console=tty0 console=ttyS0,115200" $B/aios-test.img
 sfdisk -d $B/aios-test.img

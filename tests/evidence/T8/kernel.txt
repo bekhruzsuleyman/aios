@@ -1,0 +1,12 @@
+build/bzImage: Linux kernel x86 boot executable bzImage, version 6.18.58 (root@vm) #3 SMP PREEMPT_DYNAMIC Wed Oct 21 21:33:17 UTC 2026, RO-rootFS, swap_dev 0XC, Normal VGA
+
+kernel config OK (170 symbols checked)
+
+15M	build/modules/lib/modules/6.18.58
+124 modules
+
+aios-usb.img: 2405433344 bytes
+Device                Start     End Sectors  Size Type
+build/aios-usb.img1    2048  526335  524288  256M EFI System
+build/aios-usb.img2  526336 2598911 2072576 1012M Linux root (x86-64)
+build/aios-usb.img3 2598912 4696063 2097152    1G Linux filesystem

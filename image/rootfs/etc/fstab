@@ -2,4 +2,4 @@
 tmpfs           /var            tmpfs  mode=0755,size=256M          0 0
 tmpfs           /tmp            tmpfs  mode=1777,size=256M,nosuid   0 0
 tmpfs           /home           tmpfs  mode=0755,size=256M,nosuid   0 0
-LABEL=aios-data /var/lib/aios   ext4   defaults,noatime,nosuid,nodev,nofail,x-systemd.device-timeout=120s 0 2
+LABEL=aios-data /var/lib/aios   ext4   defaults,noatime,nosuid,nodev,nofail,x-systemd.growfs,x-systemd.device-timeout=120s 0 2

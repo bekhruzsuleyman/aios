@@ -20,6 +20,14 @@ cp -a "$SRC/etc/labwc" "$EXTRA/etc/aios/labwc"
 cp -a "$SRC/usr/." "$EXTRA/usr/"
 cp -a "$SRC/units/." "$EXTRA/usr/lib/systemd/system/"
 [ -f config/aios.toml ] && cp config/aios.toml "$EXTRA/etc/aios/aios.toml"
+# Kernel modules (T8), installed by scripts/13-kernel-build.sh.
+KVER=$(cat third_party/KERNEL_VERSION)
+if [ -d "build/modules/lib/modules/$KVER" ]; then
+  mkdir -p "$EXTRA/usr/lib/modules"
+  cp -a "build/modules/lib/modules/$KVER" "$EXTRA/usr/lib/modules/"
+  rm -f "$EXTRA/usr/lib/modules/$KVER/build" "$EXTRA/usr/lib/modules/$KVER/source"
+  echo "including modules for $KVER"
+fi
 for bin in aiosd aios-shell; do
   if [ -x "target/release/$bin" ]; then
     install -m 0755 "target/release/$bin" "$EXTRA/usr/bin/$bin"
@@ -47,10 +55,11 @@ ln -sf /usr/lib/systemd/system/serial-getty@.service \
   build/rootfs-test/etc/systemd/system/getty.target.wants/serial-getty@ttyS0.service
 echo "aios-test" > build/rootfs-test/etc/aios/TEST_IMAGE
 # Test-only helpers (tests/testkit) go into the test tree only.
-if [ -x target/release/aios-testkit-events ]; then
-  install -D -m 0755 target/release/aios-testkit-events \
-    build/rootfs-test/usr/local/libexec/aios-test/aios-testkit-events
-fi
+for bin in aios-testkit-events aios-testkit-client aios-sandbox-probe; do
+  if [ -x "target/release/$bin" ]; then
+    install -D -m 0755 "target/release/$bin" "build/rootfs-test/usr/local/libexec/aios-test/$bin"
+  fi
+done
 
 # 4. Anti-fake guard on the product tree, then pack both read-only.
 scripts/check-no-fake.sh --rootfs build/rootfs

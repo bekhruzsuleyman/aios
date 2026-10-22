@@ -1,0 +1,31 @@
+{
+  "accel": "tcg (emulated)",
+  "variants": {
+    "nvme": {
+      "desktop": true,
+      "seconds": 68.8,
+      "colours": 3244
+    },
+    "ahci": {
+      "desktop": true,
+      "seconds": 63.0,
+      "colours": 3237
+    },
+    "usb": {
+      "desktop": true,
+      "seconds": 68.9,
+      "colours": 3235
+    }
+  },
+  "usb_stick_clean_poweroff": false,
+  "usb_stick": {
+    "desktop": true,
+    "seconds": 68.8,
+    "colours": 3235,
+    "data_partition_bytes_before": 1073741824,
+    "data_partition_bytes_after": 14669336576,
+    "ext4_bytes_after": 14669336576,
+    "grew": true
+  },
+  "pass": true
+}
