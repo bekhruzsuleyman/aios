@@ -1,0 +1,9 @@
+{
+  "accel": "tcg (emulated)",
+  "t5_denied_audited": true,
+  "t6_model_requests_free_form": 3,
+  "t6_model_requests_router": 0,
+  "t6_cancel_ms": 0.348,
+  "shell_journal": "aios-shell: trace key_to_frame 328.80 ms\naios-shell: trace key_to_frame 394.89 ms\naios-shell: trace key_to_frame 1049.95 ms\naios-shell: trace key_to_frame 344.35 ms\naios-shell: trace key_to_frame 351.91 ms\naios-shell: trace key_to_frame 330.21 ms\naios-shell: trace key_to_frame 18.16 ms\naios-shell: trace key_to_frame 332.34 ms\naios-shell: trace key_to_frame 344.51 ms\naios-shell: trace key_to_frame 364.87 ms\naios-shell: trace key_to_frame 376.59 ms\naios-shell: trace key_to_frame 357.98 ms\naios-shell: trace key_to_frame 333.18 ms\naios-shell: trace key_to_frame 387.58 ms\naios-shell: trace key_to_frame 21.64 ms\naios-shell: trace key_to_frame 319.74 ms\naios-shell: trace key_to_frame 334.85 ms\naios-shell: trace key_to_frame 385.95 ms\naios-shell: trace key_to_frame 335.93 ms\naios-shell: trace key_to_frame 344.24 ms\naios-shell: trace key_to_frame 400.11 ms\naios-shell: trace key_to_frame 321.84 ms\naios-shell: trace key_to_frame 328.49 ms\naios-shell: trace key_to_frame 19.19 ms\naios-shell: trace key_to_frame 491.01 ms\naios-shell: trace key_to_frame 337.47 ms\naios-shell: trace key_to_frame 332.86 ms\naios-shell: trace key_to_frame 333.95 ms\naios-shell: trace key_to_frame 555.05 ms\naios-shell: trace key_to_frame 255.89 ms",
+  "pass": true
+}
