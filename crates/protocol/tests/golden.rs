@@ -45,6 +45,8 @@ fn golden_requests() {
         "request_task_start",
         "request_task_cancel",
         "request_approval_respond",
+        "request_status_get",
+        "request_settings_ai_set",
     ] {
         let _: Request = check(name);
     }
@@ -61,5 +63,5 @@ fn golden_responses() {
 #[test]
 fn every_fixture_is_covered() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/golden");
-    assert_eq!(std::fs::read_dir(dir).unwrap().count(), 15);
+    assert_eq!(std::fs::read_dir(dir).unwrap().count(), 17);
 }

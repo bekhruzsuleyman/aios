@@ -32,7 +32,7 @@ def main():
             "pgrep -x labwc": lambda o: o.isdigit(),
             "findmnt -n -o FSTYPE,OPTIONS /": lambda o: o.startswith("erofs") and "ro" in o.split()[1].split(","),
             "findmnt -n -o SOURCE,FSTYPE /var/lib/aios": lambda o: "ext4" in o,
-            "stat -c %U /var/lib/aios/notes": lambda o: o == "aios",
+            "stat -c %U:%G /var/lib/aios/notes": lambda o: o == "aiosd:aios",
             "touch /usr/x 2>&1; echo rc=$?": lambda o: "Read-only file system" in o,
         }
         # labwc may still be starting under emulation.

@@ -24,7 +24,7 @@ SHIFTED = {":": "semicolon", "_": "minus", "+": "equal", "?": "slash", '"': "apo
 
 
 class VM:
-    def __init__(self, image, name="vm", hostfwd="", log_dir=None):
+    def __init__(self, image, name="vm", hostfwd="", log_dir=None, snapshot=True, disk_if="virtio"):
         self.image = image
         self.name = name
         self.dir = os.path.join(REPO, "build", "vm-" + name)
@@ -33,6 +33,8 @@ class VM:
         self.monitor_path = os.path.join(self.dir, "monitor.sock")
         self.log_path = os.path.join(log_dir or os.path.join(REPO, "logs"), f"serial-{name}.log")
         self.hostfwd = hostfwd
+        self.snapshot = snapshot
+        self.disk_if = disk_if
         self.proc = None
         self.buf = b""
         self.t0 = None
@@ -42,7 +44,7 @@ class VM:
             if os.path.exists(p):
                 os.unlink(p)
         env = dict(os.environ, SERIAL="unix:" + self.serial_path, MONITOR=self.monitor_path,
-                   SNAPSHOT="1", HOSTFWD=self.hostfwd)
+                   SNAPSHOT="1" if self.snapshot else "0", HOSTFWD=self.hostfwd, DISK_IF=self.disk_if)
         self.t0 = time.monotonic()
         self.proc = subprocess.Popen([os.path.join(REPO, "scripts", "22-run-qemu.sh"), self.image],
                                      env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)

@@ -100,6 +100,19 @@ pub enum Call {
         approval_id: String,
         allow: bool,
     },
+    /// Is an AI endpoint configured? Answered with [`Status`].
+    #[serde(rename = "status.get")]
+    StatusGet {},
+    /// First-run setup: store (or only test) the AI endpoint. Accepted only
+    /// on the approval socket, i.e. only from the shell. Answered with
+    /// [`SettingsResult`].
+    #[serde(rename = "settings.ai.set")]
+    SettingsAiSet {
+        endpoint: String,
+        model: String,
+        api_key: String,
+        test_only: bool,
+    },
 }
 
 /// A JSON-RPC 2.0 request from a client.
@@ -125,6 +138,22 @@ impl Request {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TaskStarted {
     pub task_id: String,
+}
+
+/// Result of `status.get`.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Status {
+    pub ai_configured: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+}
+
+/// Result of `settings.ai.set`: `ok` is whether the endpoint answered;
+/// `message` is shown to the user as is.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SettingsResult {
+    pub ok: bool,
+    pub message: String,
 }
 
 /// Result of `task.cancel` and `approval.respond`.
@@ -295,6 +324,13 @@ mod tests {
                 task_id: "t".into(),
                 approval_id: "a".into(),
                 allow: true,
+            },
+            Call::StatusGet {},
+            Call::SettingsAiSet {
+                endpoint: "http://10.0.2.2:8081/v1".into(),
+                model: "m".into(),
+                api_key: String::new(),
+                test_only: true,
             },
         ];
         for (i, call) in calls.into_iter().enumerate() {

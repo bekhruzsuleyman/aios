@@ -9,3 +9,13 @@ publish = false
 workspace = true
 
 [dependencies]
+actions = { version = "0.1.0", path = "../actions" }
+client = { version = "0.1.0", path = "../client" }
+cosmic-text = "0.19"
+protocol = { version = "0.1.0", path = "../protocol" }
+rustix = { version = "1", features = ["net", "process", "std", "thread"] }
+serde_json = "1.0.154"
+smithay-client-toolkit = { version = "0.21", default-features = false, features = ["calloop", "xkbcommon"] }
+tiny-skia = "0.12"
+tracer = { version = "0.1.0", path = "../tracer" }
+zbus = "5"

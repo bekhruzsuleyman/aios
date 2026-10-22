@@ -9,3 +9,6 @@ publish = false
 workspace = true
 
 [dependencies]
+libc = "0.2"
+protocol = { version = "0.1.0", path = "../../crates/protocol" }
+serde_json = "1.0.154"
