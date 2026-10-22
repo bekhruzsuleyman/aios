@@ -2,7 +2,7 @@
 
 An AI-first operating system on the Linux kernel: our own kernel build, a read-only image, a native Rust Wayland desktop shell, and an agent daemon whose every action passes a permission broker.
 
-Status: 0.1 in progress. See `PLAN.md` (the plan), `STATE.md` (where the build is), `CHECKLIST.md` (what is proven, with evidence) and `DECISIONS.md`.
+Status: 0.1 complete in QEMU; the physical-hardware boot is pending (see `REPORT.md`). See `PLAN.md` (the plan), `STATE.md` (where the build is), `CHECKLIST.md` (what is proven, with evidence) and `DECISIONS.md`.
 
 ## Building
 ```
