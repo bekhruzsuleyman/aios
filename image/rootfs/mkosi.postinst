@@ -7,8 +7,9 @@ set -eu
 mkosi-chroot sh -eu <<'CHROOT'
 getent group render >/dev/null || groupadd -r render
 getent group seat >/dev/null || groupadd -r seat
-id aios >/dev/null 2>&1 || useradd -u 1000 -m -d /home/aios -s /bin/sh -G video,input,render,audio,seat aios
-id aiosd >/dev/null 2>&1 || useradd -r -d /nonexistent -s /usr/sbin/nologin aiosd
+getent group netdev >/dev/null || groupadd -r netdev
+id aios >/dev/null 2>&1 || useradd -u 1000 -m -d /home/aios -s /bin/sh -G video,input,render,audio,seat,netdev aios
+id aiosd >/dev/null 2>&1 || useradd -r -G aios -d /nonexistent -s /usr/sbin/nologin aiosd
 passwd -l aios >/dev/null
 
 for u in seatd.service systemd-networkd.service systemd-resolved.service aios-session.service aiosd.service; do

@@ -1,0 +1,45 @@
+[Unit]
+Description=AiOS agent daemon (planner, permission broker, actions)
+RequiresMountsFor=/var/lib/aios
+After=systemd-tmpfiles-setup.service
+
+[Service]
+Type=simple
+User=aiosd
+Group=aiosd
+SupplementaryGroups=aios
+# Fix ownership on the data partition (root, before dropping privileges).
+ExecStartPre=+/usr/bin/systemd-tmpfiles --create /usr/lib/aios/tmpfiles-data.conf
+ExecStart=/usr/bin/aiosd --config /etc/aios/aios.toml
+Restart=on-failure
+RestartSec=1
+UMask=0007
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/aios /run/aios
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources @mount
+# aiosd applies its own Landlock ruleset and seccomp filter at start.
+SystemCallFilter=landlock_create_ruleset landlock_add_rule landlock_restrict_self seccomp
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=multi-user.target

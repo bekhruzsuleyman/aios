@@ -96,7 +96,10 @@ impl Client {
             .map_err(|e| ClientError::Io(e.to_string()))?;
         line.push('\n');
 
-        if matches!(call, Call::ApprovalRespond { .. }) {
+        if matches!(
+            call,
+            Call::ApprovalRespond { .. } | Call::SettingsAiSet { .. }
+        ) {
             let path = self.inner.approve.clone();
             let sink = self.inner.sink.clone();
             std::thread::spawn(move || match exchange(&path, &line) {
@@ -201,7 +204,7 @@ fn exchange(path: &Path, line: &str) -> Result<Response, ClientError> {
     let io = |e: std::io::Error| ClientError::Io(e.to_string());
     let mut stream = UnixStream::connect(path).map_err(io)?;
     stream
-        .set_read_timeout(Some(Duration::from_secs(10)))
+        .set_read_timeout(Some(Duration::from_secs(30)))
         .map_err(io)?;
     stream.write_all(line.as_bytes()).map_err(io)?;
     let mut reader = BufReader::new(stream);

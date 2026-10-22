@@ -9,3 +9,20 @@ publish = false
 workspace = true
 
 [dependencies]
+actions = { version = "0.1.0", path = "../actions" }
+broker = { version = "0.1.0", path = "../broker" }
+landlock = "0.4"
+libc = "0.2"
+protocol = { version = "0.1.0", path = "../protocol" }
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "json", "stream", "system-proxy"] }
+seccompiler = "0.5"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+tokio = { version = "1.54.0", features = ["rt-multi-thread", "net", "io-util", "sync", "time", "macros", "signal", "fs"] }
+toml = "1.1.8"
+tracer = { version = "0.1.0", path = "../tracer" }
+url = "2"
+uuid = { version = "1.28.0", features = ["v4"] }
+
+[dev-dependencies]
+client = { path = "../client" }

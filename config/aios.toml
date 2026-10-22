@@ -1,0 +1,18 @@
+# AiOS system configuration, shipped read-only as /etc/aios/aios.toml.
+# The AI endpoint is not here: first-run setup writes it to
+# /var/lib/aios/ai.toml (and the key to /var/lib/aios/ai.key, mode 0600).
+
+[paths]
+socket     = "/run/aios/agent.sock"
+approve    = "/run/aios/approve.sock"   # reachable only by the shell
+launch     = "/run/aios/launch.sock"    # the shell's app launcher; only aiosd connects
+audit      = "/var/lib/aios/audit.log"
+notes      = "/var/lib/aios/notes"
+read_roots = ["/var/lib/aios/user"]
+
+[search]
+provider = "browser_fallback"            # "browser_fallback" | "http_json"
+url      = ""
+
+[policy]
+default = "ask"
