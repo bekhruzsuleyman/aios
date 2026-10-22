@@ -43,7 +43,7 @@ Linux **6.18.58** (LTS), from the GitHub stable mirror because kernel.org is blo
 - **Epiphany aborted inside the sandbox** without a session bus and without `/sys`. Apps now get a private `dbus-run-session` bus and read-only `/sys`.
 - **iwd would not start**: the kernel lacked AF_ALG and keyctl crypto (`iwd: The following options are missing in the kernel: CONFIG_CRYPTO_USER_API_SKCIPHER ...`). Added to `hardware.fragment`.
 - **aiosd was killed with SIGSYS** because systemd's syscall filter blocked the Landlock and seccomp setup calls. The unit now allows exactly those.
-- **Firefox and Debian:** Debian mirrors are blocked here, so the userland is Ubuntu noble, where Firefox is a snap. The browser is Epiphany (WebKitGTK) instead (`DECISIONS.md` T3, T5).
+- **Firefox and Debian:** Debian mirrors are blocked here, so the userland is Ubuntu noble, where Firefox is a snap. The browser is Epiphany (WebKitGTK) instead (`DECISIONS.md` T3).
 
 ## Blockers (from `BLOCKERS.md`)
 
