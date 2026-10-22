@@ -1,0 +1,1 @@
+{"exec_usr_bin_true":"denied: Operation not permitted (os error 1)","landlock":"fully_enforced","read_notes_dir":"ALLOWED","read_outside_allowed_dirs":"denied: Permission denied (os error 13)","seccomp":true}

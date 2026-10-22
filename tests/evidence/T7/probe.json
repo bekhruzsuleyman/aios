@@ -1,0 +1,40 @@
+{
+  "connect_agent_sock": "failed: No such file or directory (os error 2)",
+  "connect_approve_sock": "failed: No such file or directory (os error 2)",
+  "connect_launch_sock": "failed: No such file or directory (os error 2)",
+  "kill0_shell_host_pid": "failed: No such process (os error 3)",
+  "list_home_aios": [
+    ".apps"
+  ],
+  "list_run_aios": "failed: No such file or directory (os error 2)",
+  "list_var_lib_aios": "failed: No such file or directory (os error 2)",
+  "ptrace_other_visible": [
+    {
+      "comm": "bwrap",
+      "pid": 1,
+      "ptrace": "ATTACHED"
+    },
+    {
+      "comm": "dbus-run-sessio",
+      "pid": 2,
+      "ptrace": "ATTACHED"
+    },
+    {
+      "comm": "dbus-daemon",
+      "pid": 3,
+      "ptrace": "ATTACHED"
+    }
+  ],
+  "ptrace_shell_host_pid": "failed: No such process (os error 3)",
+  "read_ai_key": "failed: No such file or directory (os error 2)",
+  "read_audit_log": "failed: No such file or directory (os error 2)",
+  "read_notes": "failed: No such file or directory (os error 2)",
+  "shell_visible": false,
+  "uid": "Uid:\t1000\t1000\t1000\t1000",
+  "visible_processes": [
+    "1 bwrap",
+    "2 dbus-run-sessio",
+    "3 dbus-daemon",
+    "4 foot"
+  ]
+}
