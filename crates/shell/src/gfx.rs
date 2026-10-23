@@ -7,6 +7,8 @@ use tiny_skia::{Color, FillRule, Paint, PathBuilder, Pixmap, Rect, Transform};
 pub struct Theme {
     pub dark: bool,
     pub panel: Color,
+    /// The panel colour without transparency (text on dark buttons).
+    pub panel_solid: Color,
     pub panel_border: Color,
     pub chip: Color,
     pub text: Color,
@@ -28,12 +30,13 @@ impl Theme {
         Theme {
             dark: false,
             panel: rgba(255, 255, 255, 214),
+            panel_solid: rgba(255, 255, 255, 255),
             panel_border: rgba(255, 255, 255, 240),
             chip: rgba(236, 238, 245, 230),
             text: rgba(32, 35, 46, 255),
             text_dim: rgba(108, 113, 133, 255),
-            accent: rgba(54, 93, 220, 255),
-            ok: rgba(40, 170, 100, 255),
+            accent: rgba(44, 150, 112, 255),
+            ok: rgba(52, 160, 104, 255),
             warn: rgba(214, 150, 30, 255),
             bad: rgba(214, 70, 70, 255),
             shadow: rgba(40, 40, 80, 255),
@@ -45,11 +48,12 @@ impl Theme {
         Theme {
             dark: true,
             panel: rgba(30, 32, 44, 222),
+            panel_solid: rgba(30, 32, 44, 255),
             panel_border: rgba(255, 255, 255, 30),
             chip: rgba(52, 55, 72, 230),
             text: rgba(238, 240, 247, 255),
             text_dim: rgba(150, 156, 178, 255),
-            accent: rgba(130, 165, 255, 255),
+            accent: rgba(110, 210, 170, 255),
             ok: rgba(90, 210, 140, 255),
             warn: rgba(240, 190, 80, 255),
             bad: rgba(255, 120, 120, 255),
@@ -151,32 +155,56 @@ pub fn circle(pixmap: &mut Pixmap, cx: f32, cy: f32, r: f32, color: Color) {
     }
 }
 
+pub fn vline(pixmap: &mut Pixmap, x: f32, y: f32, h: f32, color: Color) {
+    if let Some(rect) = Rect::from_xywh(x, y, 1.0, h) {
+        pixmap.fill_rect(rect, &paint(color), Transform::identity(), None);
+    }
+}
+
+/// A rounded rectangle with a hairline border.
+#[allow(clippy::too_many_arguments)]
+pub fn outline(
+    pixmap: &mut Pixmap,
+    x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+    r: f32,
+    border: Color,
+    fill: Color,
+) {
+    rounded(pixmap, x, y, w, h, r, border);
+    rounded(
+        pixmap,
+        x + 1.0,
+        y + 1.0,
+        w - 2.0,
+        h - 2.0,
+        (r - 1.0).max(0.0),
+        fill,
+    );
+}
+
 pub fn hline(pixmap: &mut Pixmap, x: f32, y: f32, w: f32, color: Color) {
     if let Some(rect) = Rect::from_xywh(x, y, w, 1.0) {
         pixmap.fill_rect(rect, &paint(color), Transform::identity(), None);
     }
 }
 
-/// A check mark inside a circle (finished plan step).
-pub fn check(pixmap: &mut Pixmap, cx: f32, cy: f32, color: Color) {
-    circle(pixmap, cx, cy, 8.0, color);
+/// A thin check mark (finished plan step), centred on (cx, cy).
+pub fn tick(pixmap: &mut Pixmap, cx: f32, cy: f32, color: Color) {
     let mut pb = PathBuilder::new();
-    pb.move_to(cx - 4.0, cy);
-    pb.line_to(cx - 1.0, cy + 3.0);
+    pb.move_to(cx - 4.5, cy + 0.5);
+    pb.line_to(cx - 1.5, cy + 3.5);
     pb.line_to(cx + 4.5, cy - 3.5);
     if let Some(path) = pb.finish() {
         let stroke = tiny_skia::Stroke {
-            width: 2.0,
+            width: 1.4,
             line_cap: tiny_skia::LineCap::Round,
+            line_join: tiny_skia::LineJoin::Round,
             ..Default::default()
         };
-        pixmap.stroke_path(
-            &path,
-            &paint(Color::WHITE),
-            &stroke,
-            Transform::identity(),
-            None,
-        );
+        pixmap.stroke_path(&path, &paint(color), &stroke, Transform::identity(), None);
     }
 }
 

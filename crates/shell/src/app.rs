@@ -213,7 +213,7 @@ impl App {
             Kind::Topbar => {
                 layer.set_anchor(Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
                 layer.set_size(0, ui::TOPBAR_HEIGHT);
-                layer.set_exclusive_zone(ui::TOPBAR_HEIGHT as i32);
+                layer.set_exclusive_zone(ui::TOPBAR_ZONE as i32);
             }
             Kind::Palette => {
                 // No anchor: centred by the compositor.
@@ -456,7 +456,21 @@ impl App {
             return;
         };
         gfx::to_argb(&pixmap, canvas);
+        // The top bar surface is taller than the bar (room for the working
+        // pill): only its drawn parts take clicks, the rest passes through.
+        let input = if kind == Kind::Topbar {
+            Region::new(&self.compositor).ok().inspect(|r| {
+                for a in &areas {
+                    r.add(a.x as i32, a.y as i32, a.w.ceil() as i32, a.h.ceil() as i32);
+                }
+            })
+        } else {
+            None
+        };
         let s = &mut self.surfaces[i];
+        if let Some(r) = &input {
+            s.layer.wl_surface().set_input_region(Some(r.wl_region()));
+        }
         let surface = s.layer.wl_surface();
         surface.damage_buffer(0, 0, pw as i32, ph as i32);
         surface.frame(qh, FrameCallbackData(surface.clone()));

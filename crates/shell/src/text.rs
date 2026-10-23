@@ -20,6 +20,7 @@ pub struct TextStyle {
     pub face: Face,
     pub italic: bool,
     pub bold: bool,
+    pub medium: bool,
 }
 
 impl TextStyle {
@@ -29,6 +30,7 @@ impl TextStyle {
             face: Face::Sans,
             italic: false,
             bold: false,
+            medium: false,
         }
     }
     pub const fn mono(size: f32) -> Self {
@@ -37,6 +39,7 @@ impl TextStyle {
             face: Face::Mono,
             italic: false,
             bold: false,
+            medium: false,
         }
     }
     pub const fn serif_italic(size: f32) -> Self {
@@ -45,10 +48,15 @@ impl TextStyle {
             face: Face::Serif,
             italic: true,
             bold: false,
+            medium: false,
         }
     }
     pub const fn bold(mut self) -> Self {
         self.bold = true;
+        self
+    }
+    pub const fn medium(mut self) -> Self {
+        self.medium = true;
         self
     }
 }
@@ -78,9 +86,20 @@ impl Text {
         } else {
             "DejaVu Sans"
         };
+        let mono = if has(&fonts, "JetBrains Mono") {
+            "JetBrains Mono"
+        } else {
+            "DejaVu Sans Mono"
+        };
+        // The AI's voice: Instrument Serif (italic) as in the design mockups.
+        let serif = if has(&fonts, "Instrument Serif") {
+            "Instrument Serif"
+        } else {
+            "DejaVu Serif"
+        };
         fonts.db_mut().set_sans_serif_family(sans);
-        fonts.db_mut().set_monospace_family("DejaVu Sans Mono");
-        fonts.db_mut().set_serif_family("DejaVu Serif");
+        fonts.db_mut().set_monospace_family(mono);
+        fonts.db_mut().set_serif_family(serif);
         Text {
             fonts,
             cache: SwashCache::new(),
@@ -101,6 +120,8 @@ impl Text {
         }
         if style.bold {
             attrs = attrs.weight(Weight::SEMIBOLD);
+        } else if style.medium {
+            attrs = attrs.weight(Weight::MEDIUM);
         }
         {
             let mut b = buffer.borrow_with(&mut self.fonts);
