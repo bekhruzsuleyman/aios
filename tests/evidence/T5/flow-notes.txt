@@ -1,58 +1,58 @@
-screenshot ready.png: 3238 colours
+screenshot ready.png: 3220 colours
 
-screenshot open-browser-approval.png: 5881 colours
+screenshot open-browser-approval.png: 5637 colours
 
-browser process: 365 epiphany
+browser process: 366 /usr/bin/firefox
 
 browser runs inside bwrap: PID    PPID USER     COMMAND
-    365     362 aios     epiphany
+    366     363 aios     /usr/bin/firefox
 systemd  user
 pidns=pid:[4026532306] host=pid:[4026531836]
 no /run/aios inside
 no data partition inside
 
-screenshot open-browser.png: 5051 colours
+screenshot open-browser.png: 3349 colours
 
 audit:
-{"action":"app.launch","args":{"name":"browser"},"decision":"needs_approval","outcome":"approval_id d740a2c5-a392-4379-96e1-8fd84f0bcc4d risk ask","step_id":"s1","task_id":"e03d0fc8-0c9e-4874-afac-bf102c0f939f","ts":21639416,"unix_ms":1792629547772}
-{"action":"app.launch","args":{"name":"browser"},"decision":"approved","outcome":"pending","step_id":"s1","task_id":"e03d0fc8-0c9e-4874-afac-bf102c0f939f","ts":9147726508,"unix_ms":1792629556898}
-{"action":"app.launch","args":{"name":"browser"},"decision":"executed","outcome":"ok: Opened the browser","step_id":"s1","task_id":"e03d0fc8-0c9e-4874-afac-bf102c0f939f","ts":9192232489,"unix_ms":1792629556943}
+{"action":"app.launch","args":{"name":"browser"},"decision":"needs_approval","outcome":"approval_id 7549d0cc-8f13-45eb-9e79-04029610086c risk ask","step_id":"s1","task_id":"55e6cd03-13e8-4a22-88ab-ed085f34860b","ts":12490111,"unix_ms":1792776613122}
+{"action":"app.launch","args":{"name":"browser"},"decision":"approved","outcome":"pending","step_id":"s1","task_id":"55e6cd03-13e8-4a22-88ab-ed085f34860b","ts":9080467693,"unix_ms":1792776622190}
+{"action":"app.launch","args":{"name":"browser"},"decision":"executed","outcome":"ok: Opened the browser","step_id":"s1","task_id":"55e6cd03-13e8-4a22-88ab-ed085f34860b","ts":9122524281,"unix_ms":1792776622232}
 
-search browser: 443 epiphany https://duckduckgo.com/?q=rust+language
+search browser: 568 /usr/bin/firefox https://duckduckgo.com/?q=rust+language
 
-screenshot search.png: 5059 colours
-
-audit:
-{"action":"web.search","args":{"query":"rust language"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"d4e40bf9-b103-4afd-9115-bffbe0095ec8","ts":73800183144,"unix_ms":1792629621551}
-{"action":"web.search","args":{"query":"rust language"},"decision":"executed","outcome":"ok: Searching the web for “rust language” in the browser","step_id":"s1","task_id":"d4e40bf9-b103-4afd-9115-bffbe0095ec8","ts":73900156589,"unix_ms":1792629621650}
-
-play browser: 540 epiphany https://www.youtube.com/results?search_query=lofi+beats
-
-screenshot play.png: 5259 colours
+screenshot search.png: 3682 colours
 
 audit:
-{"action":"media.play","args":{"query":"lofi beats"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"0f15c534-a4b3-4ca8-8cbf-6b9f6eadd702","ts":133493747683,"unix_ms":1792629681244}
-{"action":"media.play","args":{"query":"lofi beats"},"decision":"executed","outcome":"ok: Playing “lofi beats” on YouTube in the browser","step_id":"s1","task_id":"0f15c534-a4b3-4ca8-8cbf-6b9f6eadd702","ts":133506808774,"unix_ms":1792629681257}
+{"action":"web.search","args":{"query":"rust language"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"e75c4b4a-5277-4ea2-ba7b-8ba7d18c47e4","ts":72712731206,"unix_ms":1792776685824}
+{"action":"web.search","args":{"query":"rust language"},"decision":"executed","outcome":"ok: Searching the web for “rust language” in the browser","step_id":"s1","task_id":"e75c4b4a-5277-4ea2-ba7b-8ba7d18c47e4","ts":72763147198,"unix_ms":1792776685873}
+
+play browser: 767 /usr/bin/firefox https://www.youtube.com/results?search_query=lofi+beats
+
+screenshot play.png: 3817 colours
+
+audit:
+{"action":"media.play","args":{"query":"lofi beats"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"689020e1-ad4b-44df-87c1-c1a40b71860f","ts":132412506264,"unix_ms":1792776745522}
+{"action":"media.play","args":{"query":"lofi beats"},"decision":"executed","outcome":"ok: Playing “lofi beats” on YouTube in the browser","step_id":"s1","task_id":"689020e1-ad4b-44df-87c1-c1a40b71860f","ts":132475695732,"unix_ms":1792776745585}
 
 note file:
--rw-rw---- 1 aiosd aios 39 Oct 22 00:42 /var/lib/aios/notes/buy-milk-and-eggs.md
+-rw-rw---- 1 aiosd aios 39 Oct 23 17:33 /var/lib/aios/notes/buy-milk-and-eggs.md
 # buy milk and eggs
 
 buy milk and eggs
 
-screenshot note.png: 5052 colours
+screenshot note.png: 4762 colours
 
 audit:
-{"action":"notes.create","args":{"body":"buy milk and eggs","title":"buy milk and eggs"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"268d36ae-f599-4c55-9eab-3c99be3261fa","ts":196032859376,"unix_ms":1792629743783}
-{"action":"notes.create","args":{"body":"buy milk and eggs","title":"buy milk and eggs"},"decision":"executed","outcome":"ok: Saved note buy-milk-and-eggs.md","step_id":"s1","task_id":"268d36ae-f599-4c55-9eab-3c99be3261fa","ts":196069657040,"unix_ms":1792629743820}
+{"action":"notes.create","args":{"body":"buy milk and eggs","title":"buy milk and eggs"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"b3e2497d-1fd2-4a52-99c2-8b03bf7da307","ts":196966623632,"unix_ms":1792776810077}
+{"action":"notes.create","args":{"body":"buy milk and eggs","title":"buy milk and eggs"},"decision":"executed","outcome":"ok: Saved note buy-milk-and-eggs.md","step_id":"s1","task_id":"b3e2497d-1fd2-4a52-99c2-8b03bf7da307","ts":197002058007,"unix_ms":1792776810112}
 
-screenshot read.png: 5001 colours
+screenshot read.png: 4711 colours
 
 audit:
-{"action":"fs.read","args":{"path":"todo.txt"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"9ace3da0-063e-492c-9824-d1cec548c936","ts":209178285700,"unix_ms":1792629756929}
-{"action":"fs.read","args":{"path":"todo.txt"},"decision":"executed","outcome":"ok: Read todo.txt (35 bytes)","step_id":"s1","task_id":"9ace3da0-063e-492c-9824-d1cec548c936","ts":209186215284,"unix_ms":1792629756936}
+{"action":"fs.read","args":{"path":"todo.txt"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"a94aa791-2e5f-48d0-a871-22b2cda9c6df","ts":210040748045,"unix_ms":1792776823151}
+{"action":"fs.read","args":{"path":"todo.txt"},"decision":"executed","outcome":"ok: Read todo.txt (35 bytes)","step_id":"s1","task_id":"a94aa791-2e5f-48d0-a871-22b2cda9c6df","ts":210044553192,"unix_ms":1792776823154}
 
-screenshot read-denied.png: 5200 colours
+screenshot read-denied.png: 4908 colours
 
 denied audit:
-{"action":"fs.read","args":{"path":"/etc/shadow"},"decision":"denied","outcome":"policy: never","step_id":"s1","task_id":"4347e198-6ccd-40b7-b8f0-75a27e3c02af","ts":228984209963,"unix_ms":1792629776734}
+{"action":"fs.read","args":{"path":"/etc/shadow"},"decision":"denied","outcome":"policy: never","step_id":"s1","task_id":"11beb120-02f2-493d-8e27-edf7b492fd87","ts":229850299388,"unix_ms":1792776842960}

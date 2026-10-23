@@ -25,7 +25,7 @@ pub enum App {
 impl App {
     pub fn from_name(name: &str) -> Option<App> {
         match name.trim().to_ascii_lowercase().as_str() {
-            "browser" | "web browser" | "web" | "epiphany" => Some(App::Browser),
+            "browser" | "web browser" | "web" | "firefox" => Some(App::Browser),
             "editor" | "text editor" | "mousepad" => Some(App::Editor),
             "terminal" | "foot" | "console" => Some(App::Terminal),
             _ => None,
@@ -43,7 +43,7 @@ impl App {
     /// The program for this app. Fixed; see DECISIONS.md (browser choice).
     pub fn program(self) -> &'static str {
         match self {
-            App::Browser => "/usr/bin/epiphany-browser",
+            App::Browser => "/usr/bin/firefox",
             App::Editor => "/usr/bin/mousepad",
             App::Terminal => "/usr/bin/foot",
         }
@@ -138,6 +138,9 @@ pub fn sandbox_argv(req: &LaunchRequest, s: &SessionPaths) -> Vec<String> {
         "/sys",
         "--dev",
         "/dev",
+        // Firefox needs a writable /dev/shm for its content processes.
+        "--tmpfs",
+        "/dev/shm",
         "--dev-bind-try",
         "/dev/dri",
         "/dev/dri",
@@ -284,7 +287,7 @@ mod tests {
             [
                 "/usr/bin/dbus-run-session",
                 "--",
-                "/usr/bin/epiphany-browser",
+                "/usr/bin/firefox",
                 "https://example.org/"
             ]
         );

@@ -1022,7 +1022,7 @@ fn draw_ask(
         &ui.narration,
         x0,
         y,
-        TextStyle::serif_italic(17.0),
+        TextStyle::serif_italic(19.5),
         th.text,
         Some(w),
     );

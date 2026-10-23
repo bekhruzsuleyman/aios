@@ -24,6 +24,40 @@ for u in apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upg
   systemctl mask "$u" >/dev/null 2>&1 || true
 done
 ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+# Firefox from Mozilla's .deb (dependencies are in mkosi.conf).
+if [ -f /var/cache/aios-pkgs/firefox.deb ]; then
+  dpkg -i /var/cache/aios-pkgs/firefox.deb >/dev/null
+  rm -rf /var/cache/aios-pkgs
+  mkdir -p /usr/lib/firefox/distribution
+  cat > /usr/lib/firefox/distribution/policies.json <<'JSON'
+{
+  "policies": {
+    "DisableAppUpdate": true,
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DontCheckDefaultBrowser": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "SkipTermsOfUse": true,
+    "UserMessaging": {"WhatsNew": false, "ExtensionRecommendations": false, "FeatureRecommendations": false, "UrlbarInterventions": false, "SkipOnboarding": true, "MoreFromMozilla": false},
+    "Preferences": {
+      "browser.tabs.inTitlebar": {"Value": 0, "Status": "locked"}
+    }
+  }
+}
+JSON
+  # The first-run "Welcome / Terms of Use" sheet is driven by plain prefs that
+  # the Preferences policy does not accept, so set them as defaults here.
+  mkdir -p /usr/lib/firefox/defaults/pref
+  cat > /usr/lib/firefox/defaults/pref/aios.js <<'PREFS'
+pref("browser.aboutwelcome.enabled", false);
+pref("browser.preonboarding.enabled", false);
+pref("termsofuse.bypassNotification", true);
+pref("datareporting.policy.dataSubmissionPolicyBypassNotification", true);
+pref("trailhead.firstrun.didSeeAboutWelcome", true);
+pref("browser.startup.homepage_override.mstone", "ignore");
+PREFS
+fi
 # /var is a tmpfs at runtime, so keep the font cache under /usr.
 fc-cache -s -f >/dev/null 2>&1 || true
 CHROOT

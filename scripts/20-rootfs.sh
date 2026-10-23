@@ -28,6 +28,27 @@ if [ -d "build/modules/lib/modules/$KVER" ]; then
   rm -f "$EXTRA/usr/lib/modules/$KVER/build" "$EXTRA/usr/lib/modules/$KVER/source"
   echo "including modules for $KVER"
 fi
+# Firefox (Mozilla's own .deb; Ubuntu only ships a snap) and the serif for
+# the AI's voice. Both are fetched outside this script into
+# third_party/downloads/ (see docs/DOWNLOADS.md) and checked here.
+DL=third_party/downloads
+FFDEB=$(ls "$DL"/firefox_*_amd64*.deb 2>/dev/null | head -n1 || true)
+if [ -n "$FFDEB" ]; then
+  want=$(awk '/^SHA256:/ {print $2}' "$DL/firefox.Packages.txt")
+  have=$(sha256sum "$FFDEB" | cut -d' ' -f1)
+  [ "$want" = "$have" ] || { echo "firefox .deb checksum mismatch" >&2; exit 1; }
+  mkdir -p "$EXTRA/var/cache/aios-pkgs"
+  cp "$FFDEB" "$EXTRA/var/cache/aios-pkgs/firefox.deb"
+  echo "including $(basename "$FFDEB")"
+else
+  echo "warning: no Firefox .deb in $DL; the image will have no browser" >&2
+fi
+if [ -f "$DL/InstrumentSerif-Italic.ttf" ]; then
+  (cd "$DL" && sha256sum -c --ignore-missing --quiet SHA256SUMS)
+  F="$EXTRA/usr/share/fonts/truetype/instrument-serif"
+  mkdir -p "$F"
+  cp "$DL"/InstrumentSerif-*.ttf "$DL/OFL.txt" "$F/"
+fi
 for bin in aiosd aios-shell; do
   if [ -x "target/release/$bin" ]; then
     install -m 0755 "target/release/$bin" "$EXTRA/usr/bin/$bin"

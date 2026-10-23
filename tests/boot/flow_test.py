@@ -76,7 +76,7 @@ def audit_tail(vm, n):
 
 
 def kill_browser(vm):
-    vm.run("pkill -f epiphany >/dev/null 2>&1; pkill -x bwrap >/dev/null 2>&1; sleep 2; true", check=False)
+    vm.run("pkill -x firefox-bin >/dev/null 2>&1; pkill -x bwrap >/dev/null 2>&1; sleep 2; true", check=False)
 
 
 def t4(vm):
@@ -126,10 +126,10 @@ def t5(vm):
     time.sleep(8)
     shot(vm, "T5", "open-browser-approval.png")
     vm.sendkey("alt-a")
-    out = wait_until(vm, "pgrep -a -x epiphany", 120)
+    out = wait_until(vm, "pgrep -a -x firefox-bin", 120)
     note("T5", "browser process: " + out)
     note("T5", "browser runs inside bwrap: " + vm.run(
-        "p=$(pgrep -o -x epiphany); ps -o pid,ppid,user,args -p $p; "
+        "p=$(pgrep -o -x firefox-bin); ps -o pid,ppid,user,args -p $p; "
         "ls /proc/$p/root/run/ ; echo pidns=$(readlink /proc/$p/ns/pid) host=$(readlink /proc/1/ns/pid); "
         "test -e /proc/$p/root/run/aios && echo 'SEES /run/aios' || echo 'no /run/aios inside'; "
         "test -e /proc/$p/root/var/lib/aios/audit.log && echo 'SEES data' || echo 'no data partition inside'",
@@ -142,7 +142,7 @@ def t5(vm):
     # 2. search: browser on DuckDuckGo with the query.
     fresh_palette(vm)
     ask(vm, "search rust language")
-    out = wait_until(vm, "pgrep -a -x epiphany", 120)
+    out = wait_until(vm, "pgrep -a -x firefox-bin", 120)
     note("T5", "search browser: " + out)
     time.sleep(40 if not KVM else 5)
     shot(vm, "T5", "search.png")
@@ -152,7 +152,7 @@ def t5(vm):
     # 3. play: browser on a YouTube search.
     fresh_palette(vm)
     ask(vm, "play lofi beats")
-    out = wait_until(vm, "pgrep -a -x epiphany", 120)
+    out = wait_until(vm, "pgrep -a -x firefox-bin", 120)
     note("T5", "play browser: " + out)
     time.sleep(40 if not KVM else 5)
     shot(vm, "T5", "play.png")
