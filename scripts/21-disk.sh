@@ -5,6 +5,9 @@
 #   build/aios-usb.img   product image for a USB stick (T8): same layout; the
 #                        data partition grows to fill the stick on first boot
 #                        (systemd-repart + x-systemd.growfs)
+#   build/aios-install.img the same with a small data partition; the ISO
+#                        installer (scripts/23-iso.sh) writes it to a disk,
+#                        where it grows the same way
 # Layout: ESP (FAT32, systemd-boot + UKI) | root (erofs, read-only) | data (ext4)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -24,9 +27,11 @@ rm -rf $B/data-tree && mkdir -p $B/data-tree/user $B/data-tree/notes
 chown -R 1000:1000 $B/data-tree/user $B/data-tree/notes
 rm -f $B/data.img
 mkfs.ext4 -q -L aios-data -U "$DATA_PARTUUID" -d $B/data-tree $B/data.img "${DATA_MB}M"
+rm -f $B/data-small.img
+mkfs.ext4 -q -L aios-data -U "$DATA_PARTUUID" -d $B/data-tree $B/data-small.img 64M
 
 make_image() {
-  local variant=$1 rootfs=$2 cmdline=$3 out=$4
+  local variant=$1 rootfs=$2 cmdline=$3 out=$4 data=${5:-$B/data.img}
   local uki=$B/aios-$variant.efi esp=$B/esp-$variant.img
 
   ukify build --linux $B/bzImage --cmdline "$cmdline" --os-release @"$B/rootfs/usr/lib/os-release" \
@@ -45,7 +50,7 @@ make_image() {
   local esp_s=$((ESP_MB * mib))
   local root_bytes; root_bytes=$(stat -c %s "$rootfs")
   local root_s=$(( (root_bytes / (1024 * 1024) + 16) * mib ))
-  local data_s=$((DATA_MB * mib))
+  local data_s=$(( $(stat -c %s "$data") / SECTOR ))
   local p1=$mib p2=$((mib + esp_s)) p3=$((mib + esp_s + root_s))
   local total=$((p3 + data_s + mib))
 
@@ -60,7 +65,7 @@ start=$p3, size=$data_s, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=$DATA_P
 SFDISK
   dd if="$esp" of="$out" bs=$SECTOR seek=$p1 conv=notrunc,sparse status=none
   dd if="$rootfs" of="$out" bs=$SECTOR seek=$p2 conv=notrunc,sparse status=none
-  dd if=$B/data.img of="$out" bs=$SECTOR seek=$p3 conv=notrunc,sparse status=none
+  dd if="$data" of="$out" bs=$SECTOR seek=$p3 conv=notrunc,sparse status=none
   echo "$out: $(du -h --apparent-size "$out" | cut -f1)"
   if [ "$variant" = usb ]; then
     local max=$((14 * 1000 * 1000 * 1000))  # a "16 GB" stick holds ~14.9 GB
@@ -70,5 +75,6 @@ SFDISK
 
 make_image product $B/rootfs.erofs "$CMDLINE_BASE" $B/aios.img
 make_image usb $B/rootfs.erofs "$CMDLINE_BASE" $B/aios-usb.img
+make_image install $B/rootfs.erofs "$CMDLINE_BASE" $B/aios-install.img $B/data-small.img
 make_image test $B/rootfs-test.erofs "$CMDLINE_BASE console=tty0 console=ttyS0,115200" $B/aios-test.img
 sfdisk -d $B/aios-test.img

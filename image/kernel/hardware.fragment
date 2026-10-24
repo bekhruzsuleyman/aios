@@ -107,3 +107,10 @@ CONFIG_CRYPTO_CMAC=y
 CONFIG_CRYPTO_MD5=y
 CONFIG_CRYPTO_SHA1=y
 CONFIG_CRYPTO_SHA512=y
+# VirtualBox guests: VMSVGA (vmwgfx) and VBoxSVGA (vboxvideo) displays and
+# the guest device. labwc uses the pixman renderer, so plain KMS dumb
+# buffers are enough; no 3D acceleration needed.
+CONFIG_VIRT_DRIVERS=y
+CONFIG_VBOXGUEST=m
+CONFIG_DRM_VMWGFX=m
+CONFIG_DRM_VBOXVIDEO=m

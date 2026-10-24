@@ -1,0 +1,60 @@
+#!/bin/busybox sh
+# AiOS live/installer initramfs (only used by the ISO; disk images boot
+# without an initramfs). Finds the CD, mounts its read-only root, then
+#   aios.live     boots the desktop from the CD (changes are kept in RAM)
+#   aios.install  writes AiOS to a disk the user picks, then reboots
+/bin/busybox --install -s /bin
+export PATH=/bin
+mkdir -p /proc /sys /dev /run /cd /newroot /live
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+
+say() { echo "$*" > /dev/console; }
+fail() {
+  say ""
+  say "AiOS: $*"
+  say "Press Enter to power off."
+  read -r _ < /dev/console
+  poweroff -f
+}
+
+# The CD can take a few seconds to appear.
+found=
+for _ in $(seq 1 60); do
+  for dev in /dev/sr* /dev/sd? /dev/vd? /dev/nvme?n?; do
+    [ -b "$dev" ] || continue
+    if mount -t iso9660 -o ro "$dev" /cd 2>/dev/null; then
+      if [ -f /cd/aios/rootfs.erofs ]; then found=$dev; break 2; fi
+      umount /cd
+    fi
+  done
+  sleep 0.5
+done
+[ -n "$found" ] || fail "could not find the AiOS CD."
+
+ROOTLOOP=$(losetup -f)
+losetup -r "$ROOTLOOP" /cd/aios/rootfs.erofs || fail "could not attach the root image."
+mount -t erofs -o ro "$ROOTLOOP" /newroot || fail "could not mount the root image."
+
+if grep -qw aios.install /proc/cmdline; then
+  . /installer.sh
+  exit 0
+fi
+
+# Live session: a RAM-backed data volume labelled like the real one, so the
+# system finds LABEL=aios-data exactly as it does on an installed disk.
+mount -t tmpfs -o size=512M,mode=0700 tmpfs /live
+truncate -s 384M /live/data.img
+DATALOOP=$(losetup -f)
+losetup "$DATALOOP" /live/data.img || fail "could not attach the live data volume."
+mke2fs -q -L aios-data "$DATALOOP" || fail "could not create the live data volume."
+mkdir -p /mnt
+mount -t ext2 "$DATALOOP" /mnt
+mkdir -p /mnt/user /mnt/notes
+chown 1000:1000 /mnt/user /mnt/notes
+umount /mnt
+
+mount --move /dev /newroot/dev
+umount /proc /sys
+exec switch_root /newroot /sbin/init

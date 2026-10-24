@@ -20,7 +20,7 @@ for u in apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upg
          man-db.timer man-db.service e2scrub_all.timer e2scrub_reap.service \
          getty@tty1.service getty@tty2.service getty@tty3.service getty@tty4.service \
          getty@tty5.service getty@tty6.service motd-news.timer systemd-networkd-wait-online.service \
-         fstrim.timer dpkg-db-backup.timer; do
+         fstrim.timer dpkg-db-backup.timer ead.service; do
   systemctl mask "$u" >/dev/null 2>&1 || true
 done
 ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
