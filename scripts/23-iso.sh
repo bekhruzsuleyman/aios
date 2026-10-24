@@ -59,31 +59,37 @@ MIN_BYTES=$((total + 2 * 1024 * 1024 * 1024))
 EOF
 cp $B/rootfs.erofs "$W/cd/aios/rootfs.erofs"
 
-# Boot image (El Torito, FAT): systemd-boot and one UKI per entry.
-osrel() {  # os-release with the menu title
-  sed "s/^PRETTY_NAME=.*/PRETTY_NAME=\"$1\"/" $B/rootfs/usr/lib/os-release > "$W/os-release-$2"
-}
-osrel "Try AiOS" try
-osrel "Install AiOS" install
-mk_uki() {
-  ukify build --linux $B/bzImage --initrd "$W/initrd.cpio.zst" --cmdline "$2" \
-    --os-release @"$W/os-release-$1" --uname "$(cat third_party/KERNEL_VERSION)" \
-    --output "$W/aios-$1.efi" >/dev/null
-}
-mk_uki try "aios.live $CMDLINE_COMMON systemd.mask=systemd-repart.service"
-mk_uki install "aios.install quiet loglevel=3"
-size_kb=$(( ( $(du -k --apparent-size "$W/aios-try.efi" | cut -f1) * 2 + 8192 ) ))
-efi=$W/cd/efiboot.img
+# Boot image (FAT): systemd-boot with two Type #1 entries sharing one kernel
+# and initramfs. It must stay under 32 MB: the El Torito sector count is 16
+# bits, and older firmware (VirtualBox's) cannot boot an image whose count
+# had to be left at 0. Two UKIs (kernel each) made it 37 MB, which only newer
+# OVMF tolerated.
+efi=$W/efiboot.img
+size_kb=$(( ( $(du -k --apparent-size $B/bzImage | cut -f1) + $(du -k --apparent-size "$W/initrd.cpio.zst" | cut -f1) ) + 4096 ))
+[ "$size_kb" -lt 32000 ] || { echo "EFI boot image would be ${size_kb} KiB (> 32 MB)" >&2; exit 1; }
 mkfs.vfat -n AIOS-ISO -C "$efi" "$size_kb" >/dev/null
-mmd -i "$efi" ::/EFI ::/EFI/BOOT ::/EFI/Linux ::/loader
+mmd -i "$efi" ::/EFI ::/EFI/BOOT ::/aios ::/loader ::/loader/entries
 mcopy -i "$efi" "$SDBOOT" ::/EFI/BOOT/BOOTX64.EFI
-mcopy -i "$efi" "$W/aios-try.efi" ::/EFI/Linux/aios-1-try.efi
-mcopy -i "$efi" "$W/aios-install.efi" ::/EFI/Linux/aios-2-install.efi
-default=aios-1-try.efi; [ "${ISO_DEFAULT:-try}" = install ] && default=aios-2-install.efi
+mcopy -i "$efi" $B/bzImage ::/aios/vmlinuz
+mcopy -i "$efi" "$W/initrd.cpio.zst" ::/aios/initrd.zst
+entry() {  # file title options
+  printf 'title %s\nlinux /aios/vmlinuz\ninitrd /aios/initrd.zst\noptions %s\n' "$2" "$3" > "$W/$1"
+  mcopy -i "$efi" "$W/$1" ::/loader/entries/$1
+}
+entry 1-try.conf "Try AiOS" "aios.live $CMDLINE_COMMON systemd.mask=systemd-repart.service"
+entry 2-install.conf "Install AiOS" "aios.install quiet loglevel=3"
+default=1-try.conf; [ "${ISO_DEFAULT:-try}" = install ] && default=2-install.conf
 printf 'timeout 8\ndefault %s\neditor no\n' "$default" > "$W/loader.conf"
 mcopy -i "$efi" "$W/loader.conf" ::/loader/loader.conf
 
+# Same layout as Ubuntu's ISOs: the boot image is an appended GPT partition
+# (so the ISO also works written to a USB stick) and the El Torito entry
+# points at it with an explicit load size.
+sectors=$(( $(stat -c %s "$efi") / 512 ))
 rm -f "$OUT"
 xorriso -as mkisofs -quiet -iso-level 3 -V AIOS -R -J \
-  -e efiboot.img -no-emul-boot -o "$OUT" "$W/cd"
+  -append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B "$efi" -appended_part_as_gpt \
+  -c boot.catalog \
+  -e --interval:appended_partition_2:all:: -no-emul-boot -boot-load-size "$sectors" \
+  -o "$OUT" "$W/cd"
 echo "$OUT: $(du -h --apparent-size "$OUT" | cut -f1)"
