@@ -1,82 +1,82 @@
-screenshot not-connected.png: 4908 colours
+screenshot not-connected.png: 4920 colours
 
-screenshot setup-saved.png: 5113 colours
+screenshot setup-saved.png: 5114 colours
 
 stored settings:
 endpoint = "http://10.0.2.2:8081/v1"
 model = "test-model"
 timeout_ms = 60000
--rw------- 1 aiosd aiosd  7 Oct 23 17:34 /var/lib/aios/ai.key
--rw-r----- 1 aiosd aiosd 77 Oct 23 17:34 /var/lib/aios/ai.toml
+-rw------- 1 aiosd aiosd  7 Oct 24 00:25 /var/lib/aios/ai.key
+-rw-r----- 1 aiosd aiosd 77 Oct 24 00:25 /var/lib/aios/ai.toml
 
-screenshot weekend-plan.png: 4701 colours
+screenshot weekend-plan.png: 4713 colours
 
 weekend note: /var/lib/aios/notes/weekend-plan.md
 
 audit:
-{"action":"media.play","args":{"query":"relaxing piano music"},"decision":"allowed","outcome":"pending","step_id":"s3","task_id":"61e5c193-e922-4c48-abfc-d0f3b4fd985c","ts":301789985093,"unix_ms":1792776914900}
-{"action":"notes.create","args":{"body":"Saturday: look at the search results.\nSunday: rest.","title":"Weekend plan"},"decision":"allowed","outcome":"pending","step_id":"s2","task_id":"61e5c193-e922-4c48-abfc-d0f3b4fd985c","ts":301791432641,"unix_ms":1792776914901}
-{"action":"notes.create","args":{"body":"Saturday: look at the search results.\nSunday: rest.","title":"Weekend plan"},"decision":"executed","outcome":"ok: Saved note weekend-plan.md","step_id":"s2","task_id":"61e5c193-e922-4c48-abfc-d0f3b4fd985c","ts":301795339566,"unix_ms":1792776914905}
-{"action":"web.search","args":{"query":"things to do this weekend"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"61e5c193-e922-4c48-abfc-d0f3b4fd985c","ts":301796103676,"unix_ms":1792776914906}
-{"action":"media.play","args":{"query":"relaxing piano music"},"decision":"executed","outcome":"ok: Playing “relaxing piano music” on YouTube in the browser","step_id":"s3","task_id":"61e5c193-e922-4c48-abfc-d0f3b4fd985c","ts":301840596894,"unix_ms":1792776914950}
-{"action":"web.search","args":{"query":"things to do this weekend"},"decision":"executed","outcome":"ok: Searching the web for “things to do this weekend” in the browser","step_id":"s1","task_id":"61e5c193-e922-4c48-abfc-d0f3b4fd985c","ts":301861267879,"unix_ms":1792776914971}
+{"action":"web.search","args":{"query":"things to do this weekend"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"6533f8c5-5316-4abc-9ebc-3807cf8e7164","ts":301678960956,"unix_ms":1792801590080}
+{"action":"media.play","args":{"query":"relaxing piano music"},"decision":"allowed","outcome":"pending","step_id":"s3","task_id":"6533f8c5-5316-4abc-9ebc-3807cf8e7164","ts":301680646501,"unix_ms":1792801590081}
+{"action":"notes.create","args":{"body":"Saturday: look at the search results.\nSunday: rest.","title":"Weekend plan"},"decision":"allowed","outcome":"pending","step_id":"s2","task_id":"6533f8c5-5316-4abc-9ebc-3807cf8e7164","ts":301686136902,"unix_ms":1792801590087}
+{"action":"notes.create","args":{"body":"Saturday: look at the search results.\nSunday: rest.","title":"Weekend plan"},"decision":"executed","outcome":"ok: Saved note weekend-plan.md","step_id":"s2","task_id":"6533f8c5-5316-4abc-9ebc-3807cf8e7164","ts":301692281750,"unix_ms":1792801590093}
+{"action":"web.search","args":{"query":"things to do this weekend"},"decision":"executed","outcome":"ok: Searching the web for “things to do this weekend” in the browser","step_id":"s1","task_id":"6533f8c5-5316-4abc-9ebc-3807cf8e7164","ts":301719659466,"unix_ms":1792801590120}
+{"action":"media.play","args":{"query":"relaxing piano music"},"decision":"executed","outcome":"ok: Playing “relaxing piano music” on YouTube in the browser","step_id":"s3","task_id":"6533f8c5-5316-4abc-9ebc-3807cf8e7164","ts":301736894181,"unix_ms":1792801590138}
 
-screenshot todo-summary.png: 4720 colours
+screenshot todo-summary.png: 4737 colours
 
 audit:
-{"action":"fs.read","args":{"path":"todo.txt"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"04e46578-3da6-4e47-9ef7-c9a87c234993","ts":338419576121,"unix_ms":1792776951529}
-{"action":"fs.read","args":{"path":"todo.txt"},"decision":"executed","outcome":"ok: Read todo.txt (35 bytes)","step_id":"s1","task_id":"04e46578-3da6-4e47-9ef7-c9a87c234993","ts":338450655352,"unix_ms":1792776951560}
+{"action":"fs.read","args":{"path":"todo.txt"},"decision":"allowed","outcome":"pending","step_id":"s1","task_id":"b6e79e43-36f6-4387-a117-1da74d808e0c","ts":338319918735,"unix_ms":1792801626721}
+{"action":"fs.read","args":{"path":"todo.txt"},"decision":"executed","outcome":"ok: Read todo.txt (35 bytes)","step_id":"s1","task_id":"b6e79e43-36f6-4387-a117-1da74d808e0c","ts":338342787657,"unix_ms":1792801626743}
 
 model requests: free-form 3, router command 0
 
-screenshot cancel-before.png: 5229 colours
+screenshot cancel-before.png: 5238 colours
 
-screenshot cancelled.png: 4738 colours
+screenshot cancelled.png: 4749 colours
 
 aiosd timeline after cancel:
-action:fs.read      19.080     370.461
-ai.first_byte       11.415     381.876
-ai.stream           13.496     395.372
-ai.answer           14.096     409.468
-task ae2c3c77-371b-4c7b-9351-f98830a1cde6 timeline:
+broker.decide       10.583     280.071
+action:fs.read      14.875     294.947
+ai.first_byte       11.970     306.917
+ai.stream           15.475     322.392
+ai.answer           16.053     338.445
+task c6fea6d5-ca4a-4dbd-a9c6-386e08abbc96 timeline:
 stage                        ms      cum ms
-router                    2.505       2.505
-broker.decide             2.504       5.008
-action:notes.create      15.333      20.341
-task 0ef208ea-177f-4f06-985e-5c5bd9de6567 timeline:
-stage            ms      cum ms
-router        0.005       0.005
-cancel        0.517       0.522
-ai.plan    6080.763    6081.285
+router                    1.239       1.239
+broker.decide             2.599       3.838
+action:notes.create      10.377      14.215
+task 19d8e00d-7f47-4f82-a620-55374d516368 timeline:
+stage           ms      cum ms
+router       0.007       0.007
+cancel       0.474       0.481
 
 aiosd journal:
-ai.first_byte            20.052      20.234
-ai.stream                27.461      47.696
-ai.plan                  34.435      82.131
-broker.decide             1.255      83.386
-broker.decide             0.763      84.149
-action:notes.create       3.504      87.653
-broker.decide             0.318      87.971
-action:media.play        48.554     136.524
-action:web.search        66.092     202.616
-task 04e46578-3da6-4e47-9ef7-c9a87c234993 timeline:
+router                    0.282       0.282
+ai.first_byte            13.286      13.568
+ai.stream                17.428      30.995
+ai.plan                  24.464      55.459
+broker.decide             1.230      56.689
+broker.decide             2.651      59.340
+broker.decide             1.571      60.912
+action:notes.create       5.202      66.113
+action:web.search        40.629     106.743
+action:media.play        57.070     163.812
+task b6e79e43-36f6-4387-a117-1da74d808e0c timeline:
 stage                   ms      cum ms
-router               0.161       0.161
-ai.first_byte       98.595      98.756
-ai.stream          107.530     206.287
-ai.plan            128.154     334.440
-broker.decide       16.941     351.382
-action:fs.read      19.080     370.461
-ai.first_byte       11.415     381.876
-ai.stream           13.496     395.372
-ai.answer           14.096     409.468
-task ae2c3c77-371b-4c7b-9351-f98830a1cde6 timeline:
+router               0.239       0.239
+ai.first_byte       78.952      79.191
+ai.stream           87.441     166.631
+ai.plan            102.857     269.488
+broker.decide       10.583     280.071
+action:fs.read      14.875     294.947
+ai.first_byte       11.970     306.917
+ai.stream           15.475     322.392
+ai.answer           16.053     338.445
+task c6fea6d5-ca4a-4dbd-a9c6-386e08abbc96 timeline:
 stage                        ms      cum ms
-router                    2.505       2.505
-broker.decide             2.504       5.008
-action:notes.create      15.333      20.341
-task 0ef208ea-177f-4f06-985e-5c5bd9de6567 timeline:
-stage            ms      cum ms
-router        0.005       0.005
-cancel        0.517       0.522
-ai.plan    6080.763    6081.285
+router                    1.239       1.239
+broker.decide             2.599       3.838
+action:notes.create      10.377      14.215
+task 19d8e00d-7f47-4f82-a620-55374d516368 timeline:
+stage           ms      cum ms
+router       0.007       0.007
+cancel       0.474       0.481

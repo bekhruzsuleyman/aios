@@ -1,14 +1,14 @@
-screenshot topbar.png: 3219 colours
+screenshot topbar.png: 3230 colours
 
-screenshot palette-typed.png: 4812 colours
+screenshot palette-typed.png: 4814 colours
 
-screenshot plan-ticking.png: 5309 colours
+screenshot plan-ticking.png: 5325 colours
 
-screenshot approval.png: 5630 colours
+screenshot approval.png: 5647 colours
 
-screenshot result.png: 4801 colours
+screenshot result.png: 4810 colours
 
-screenshot setup-panel.png: 5164 colours
+screenshot setup-panel.png: 5173 colours
 
 testkit log:
 aios-testkit-events: TEST-ONLY event server on /run/aios/agent.sock and /run/aios/approve.sock
