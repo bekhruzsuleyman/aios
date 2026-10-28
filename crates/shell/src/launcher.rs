@@ -11,6 +11,10 @@ use std::os::unix::net::{UnixListener, UnixStream};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
+/// The user's files on the data partition (see tmpfiles-data.conf).
+const USER_FILES: &str = "/var/lib/aios/user";
+
+#[derive(Clone)]
 pub struct Launcher {
     pub socket: PathBuf,
     pub runtime_dir: PathBuf,
@@ -37,7 +41,8 @@ impl Launcher {
 
     /// Bind the socket (group-writable, so aiosd's group can connect) and
     /// serve it on a thread.
-    pub fn spawn(self) -> Result<(), String> {
+    pub fn spawn(&self) -> Result<(), String> {
+        let this = self.clone();
         let _ = std::fs::remove_file(&self.socket);
         let listener = UnixListener::bind(&self.socket)
             .map_err(|e| format!("{}: {e}", self.socket.display()))?;
@@ -46,7 +51,7 @@ impl Launcher {
         eprintln!("aios-shell: launcher on {}", self.socket.display());
         std::thread::spawn(move || {
             for stream in listener.incoming().flatten() {
-                if let Err(e) = self.serve(stream) {
+                if let Err(e) = this.serve(stream) {
                     eprintln!("aios-shell: launch failed: {e}");
                 }
             }
@@ -88,7 +93,7 @@ impl Launcher {
         w.write_all(out.as_bytes()).map_err(|e| e.to_string())
     }
 
-    fn launch(&self, req: &LaunchRequest) -> Result<u32, String> {
+    pub fn launch(&self, req: &LaunchRequest) -> Result<u32, String> {
         validate(req)?;
         let scratch = self.home.join(".apps").join(req.app.id());
         std::fs::create_dir_all(&scratch).map_err(|e| format!("{}: {e}", scratch.display()))?;
@@ -98,6 +103,7 @@ impl Launcher {
                 runtime_dir: &self.runtime_dir,
                 wayland_display: &self.wayland_display,
                 scratch: &scratch,
+                files: Some(Path::new(USER_FILES)),
             },
         );
         let (prog, args) = argv.split_first().ok_or("empty command line")?;

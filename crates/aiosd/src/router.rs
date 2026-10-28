@@ -1,5 +1,7 @@
 //! Intent router: simple commands go straight to one action, no AI.
-//! Patterns are case-insensitive and anchored at the start.
+//! Patterns are case-insensitive and anchored at the start. Anything more
+//! than one simple command ("open browser and search for youtube", a file
+//! name with spaces, an app we do not have) is left to the AI.
 
 use serde_json::{json, Value};
 
@@ -34,7 +36,14 @@ pub fn route(text: &str) -> Option<Routed> {
             args: json!({"title": title, "body": rest}),
         });
     }
+    // Several requests in one ("… and …", "…, then …") are for the AI.
+    let lower = t.to_lowercase();
+    if [" and ", " then ", ", "].iter().any(|sep| lower.contains(sep)) {
+        return None;
+    }
     if let Some(rest) = strip_prefix_ci(t, "open ") {
+        let rest = strip_prefix_ci(rest, "the ").unwrap_or(rest);
+        actions::launch::App::from_name(rest)?;
         return Some(Routed {
             title: format!("Open {rest}"),
             action: "app.launch",
@@ -56,6 +65,9 @@ pub fn route(text: &str) -> Option<Routed> {
         });
     }
     if let Some(rest) = strip_prefix_ci(t, "read ") {
+        if rest.contains(char::is_whitespace) {
+            return None;
+        }
         return Some(Routed {
             title: format!("Read {rest}"),
             action: "fs.read",
@@ -100,5 +112,16 @@ mod tests {
         assert!(route("opening hours of the museum").is_none());
         assert!(route("what is the weather").is_none());
         assert!(route("é").is_none());
+    }
+
+    #[test]
+    fn more_than_one_command_goes_to_the_ai() {
+        assert!(route("open browser and serach for youtube").is_none());
+        assert!(route("search cats, then play music").is_none());
+        assert!(route("open the moon").is_none());
+        assert!(route("read my file todo.txt and summarise it").is_none());
+        assert!(route("read my notes").is_none());
+        assert_eq!(route("open the terminal").unwrap().action, "app.launch");
+        assert_eq!(route("note: milk and eggs").unwrap().action, "notes.create");
     }
 }

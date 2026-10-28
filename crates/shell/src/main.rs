@@ -85,5 +85,5 @@ fn main() -> Result<(), String> {
         agent: sock("AIOS_AGENT_SOCK", "/run/aios/agent.sock"),
         approve: sock("AIOS_APPROVE_SOCK", "/run/aios/approve.sock"),
     };
-    app::run(paths, rx, tx)
+    app::run(paths, launcher, rx, tx)
 }

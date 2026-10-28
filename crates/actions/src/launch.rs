@@ -97,7 +97,13 @@ pub struct SessionPaths<'a> {
     pub wayland_display: &'a str,
     /// Per-app writable home inside the sandbox.
     pub scratch: &'a Path,
+    /// The user's files (on the data partition); its USER_FOLDERS appear
+    /// in every app's home. Nothing else of the data partition does.
+    pub files: Option<&'a Path>,
 }
+
+/// The folders of the user's files that apps see in their home.
+pub const USER_FOLDERS: [&str; 6] = ["Desktop", "Documents", "Downloads", "Music", "Pictures", "Videos"];
 
 /// The full bubblewrap command line for a validated request.
 pub fn sandbox_argv(req: &LaunchRequest, s: &SessionPaths) -> Vec<String> {
@@ -165,6 +171,12 @@ pub fn sandbox_argv(req: &LaunchRequest, s: &SessionPaths) -> Vec<String> {
     .collect();
     v.extend(["--bind".into(), wl.clone(), wl]);
     v.extend(["--bind".into(), home.clone(), home.clone()]);
+    if let Some(files) = s.files {
+        for f in USER_FOLDERS {
+            let src = files.join(f).to_string_lossy().into_owned();
+            v.extend(["--bind-try".into(), src, format!("{home}/{f}")]);
+        }
+    }
     for (k, val) in [
         ("HOME", home.as_str()),
         ("XDG_RUNTIME_DIR", rt.as_str()),
@@ -268,6 +280,7 @@ mod tests {
             runtime_dir: &rt,
             wayland_display: "wayland-0",
             scratch: &home,
+            files: Some(Path::new("/var/lib/aios/user")),
         };
         let req = LaunchRequest {
             app: App::Browser,
@@ -280,7 +293,13 @@ mod tests {
         assert!(joined.contains("--tmpfs /var"));
         assert!(joined.contains("--unshare-pid"));
         assert!(!joined.contains("/run/aios"));
-        assert!(!joined.contains("/var/lib/aios"));
+        // Of the data partition, only the user's folders are visible.
+        let data: Vec<&String> = argv.iter().filter(|a| a.starts_with("/var/lib/aios")).collect();
+        assert_eq!(data.len(), USER_FOLDERS.len());
+        assert!(data.iter().all(|a| a.starts_with("/var/lib/aios/user/")));
+        assert!(joined.contains(
+            "--bind-try /var/lib/aios/user/Downloads /home/aios/.apps/browser/Downloads"
+        ));
         let sep = argv.iter().position(|a| a == "--").unwrap();
         assert_eq!(
             &argv[sep + 1..],

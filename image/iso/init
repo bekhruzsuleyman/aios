@@ -13,7 +13,7 @@ mount -t devtmpfs devtmpfs /dev
 say() { echo "$*" > /dev/console; }
 fail() {
   say ""
-  say "AiOS: $*"
+  say "Alethic: $*"
   say "Press Enter to power off."
   read -r _ < /dev/console
   poweroff -f
@@ -31,7 +31,7 @@ for _ in $(seq 1 60); do
   done
   sleep 0.5
 done
-[ -n "$found" ] || fail "could not find the AiOS CD."
+[ -n "$found" ] || fail "could not find the Alethic CD."
 
 ROOTLOOP=$(losetup -f)
 losetup -r "$ROOTLOOP" /cd/aios/rootfs.erofs || fail "could not attach the root image."

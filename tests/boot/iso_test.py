@@ -2,8 +2,8 @@
 """The ISO in a VirtualBox-like VM (e1000, AHCI, PS/2
 keyboard, USB tablet; virtio display, see VBOX=1 in scripts/22-run-qemu.sh):
 
-  1. "Try AiOS" boots the desktop from the CD
-  2. "Install AiOS" writes AiOS to an empty 8 GB disk (disk name and
+  1. "Try Alethic" boots the desktop from the CD
+  2. "Install Alethic" writes Alethic to an empty 8 GB disk (disk name and
      "yes" typed as keys)
   3. the installed disk boots to the desktop with the CD removed
 
@@ -66,7 +66,7 @@ finally:
     vm.stop()
 
 # 2. Installer. Picking the menu entry by key is timing-sensitive under
-# emulation, so this boot uses the same ISO rebuilt with "Install AiOS" as
+# emulation, so this boot uses the same ISO rebuilt with "Install Alethic" as
 # the default entry (ISO_DEFAULT in scripts/23-iso.sh).
 subprocess.run([os.path.join(REPO, "scripts", "23-iso.sh")], check=True,
                env=dict(os.environ, ISO_DEFAULT="install", ISO_OUT=INSTALL_ISO))

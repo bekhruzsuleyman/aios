@@ -56,6 +56,12 @@ try:
     wait_until(vm, "test -S /run/user/1000/wayland-0", 180)
     time.sleep(10)
     shot(vm, "1-desktop.png")
+    # Alt+Space opens the palette with the apps list; Escape closes it.
+    vm.sendkey("alt-spc")
+    time.sleep(4)
+    shot(vm, "1b-palette-apps.png")
+    vm.sendkey("esc")
+    time.sleep(2)
 
     # 1. The built-in AI, with no setup.
     # No curl in the image: bash's /dev/tcp.
@@ -63,27 +69,27 @@ try:
         vm, "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8180 && printf \"GET /health HTTP/1.0\\r\\n\\r\\n\" >&3 "
         "&& cat <&3' | grep '\"ok\"'", 600, every=10)
     log["llm_health"] = out.strip()
-    _, out = vm.run("systemctl show -p ActiveState,MainPID aios-llm.service; "
+    out = vm.run("systemctl show -p ActiveState,MainPID aios-llm.service; "
                     "ps -o rss=,args= -C llama-server | cut -c1-120")
     log["llm_service"] = out.strip()
     print(out, flush=True)
 
-    # 2. A free-form request, planned by the local model.
+    # 2. A free-form request, planned by the local model. Under TCG one
+    # plan takes longer than aiosd's 300 s limit, so this needs KVM; the
+    # same image tree is then checked natively by tests/boot/image_ai_native.sh.
     req = "save a note titled Shopping with milk and eggs"
-    code, out = vm.run(f"{CLIENT} run /run/aios/agent.sock '{req}' --timeout-s 900",
-                       timeout=960 * SLOW, check=False)
-    lines = [l for l in out.splitlines() if l.startswith("{") or l.startswith("SUMMARY")]
-    log["task"] = {"request": req, "events": lines[-6:]}
-    summary = json.loads(out.split("SUMMARY", 1)[1]) if "SUMMARY" in out else {}
-    assert summary.get("terminal", {}).get("type") == "result", out[-2000:]
-    assert any('"plan_created"' in l and "notes.create" in l for l in lines), out[-2000:]
-    _, notes = vm.run("ls /var/lib/aios/notes; cat /var/lib/aios/notes/shopping.md")
-    log["note"] = notes.strip()
-    assert "milk" in notes.lower(), notes
-    _, status = vm.run(
-        "printf '%s\\n' '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"status.get\",\"params\":{}}' "
-        f"| {CLIENT} connect /run/aios/agent.sock 2>&1 | head -3", check=False)
-    log["status"] = status.strip()
+    if KVM:
+        code, out = vm.run(f"{CLIENT} run /run/aios/agent.sock '{req}' --timeout-s 900",
+                           timeout=960 * SLOW, check=False)
+        lines = [l for l in out.splitlines() if l.startswith("{") or l.startswith("SUMMARY")]
+        log["task"] = {"request": req, "events": lines[-6:]}
+        summary = json.loads(out.split("SUMMARY", 1)[1]) if "SUMMARY" in out else {}
+        assert summary.get("terminal", {}).get("type") == "result", out[-2000:]
+        assert any('"plan_created"' in l and "notes.create" in l for l in lines), out[-2000:]
+        notes = vm.run("grep -ril milk /var/lib/aios/notes")
+        log["note"] = notes.strip()
+    else:
+        log["task"] = "skipped: no KVM (see tests/boot/image_ai_native.sh)"
 
     # 3. A window with traffic lights, then a maximised one over the bar,
     # and the bar brought back by the pointer on the top edge.

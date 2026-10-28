@@ -6,7 +6,7 @@
 #                 picks (image/iso/installer.sh), which then boots like the
 #                 USB image and grows its data partition to fill the disk
 # Needs scripts/21-disk.sh first. UEFI only (no BIOS boot).
-# ISO_DEFAULT=install makes "Install AiOS" the default entry and ISO_OUT
+# ISO_DEFAULT=install makes "Install Alethic" the default entry and ISO_OUT
 # names the output; tests/boot/iso_test.py uses both so it needs no key
 # timing in the boot menu.
 set -euo pipefail
@@ -67,7 +67,7 @@ cp $B/rootfs.erofs "$W/cd/aios/rootfs.erofs"
 efi=$W/efiboot.img
 size_kb=$(( ( $(du -k --apparent-size $B/bzImage | cut -f1) + $(du -k --apparent-size "$W/initrd.cpio.zst" | cut -f1) ) + 4096 ))
 [ "$size_kb" -lt 32000 ] || { echo "EFI boot image would be ${size_kb} KiB (> 32 MB)" >&2; exit 1; }
-mkfs.vfat -n AIOS-ISO -C "$efi" "$size_kb" >/dev/null
+mkfs.vfat -n ALETHIC -C "$efi" "$size_kb" >/dev/null
 mmd -i "$efi" ::/EFI ::/EFI/BOOT ::/aios ::/loader ::/loader/entries
 mcopy -i "$efi" "$SDBOOT" ::/EFI/BOOT/BOOTX64.EFI
 mcopy -i "$efi" $B/bzImage ::/aios/vmlinuz
@@ -76,8 +76,8 @@ entry() {  # file title options
   printf 'title %s\nlinux /aios/vmlinuz\ninitrd /aios/initrd.zst\noptions %s\n' "$2" "$3" > "$W/$1"
   mcopy -i "$efi" "$W/$1" ::/loader/entries/$1
 }
-entry 1-try.conf "Try AiOS" "aios.live $CMDLINE_COMMON systemd.mask=systemd-repart.service"
-entry 2-install.conf "Install AiOS" "aios.install quiet loglevel=3"
+entry 1-try.conf "Try Alethic" "aios.live $CMDLINE_COMMON systemd.mask=systemd-repart.service"
+entry 2-install.conf "Install Alethic" "aios.install quiet loglevel=3"
 default=1-try.conf; [ "${ISO_DEFAULT:-try}" = install ] && default=2-install.conf
 printf 'timeout 8\ndefault %s\neditor no\n' "$default" > "$W/loader.conf"
 mcopy -i "$efi" "$W/loader.conf" ::/loader/loader.conf
@@ -87,7 +87,7 @@ mcopy -i "$efi" "$W/loader.conf" ::/loader/loader.conf
 # points at it with an explicit load size.
 sectors=$(( $(stat -c %s "$efi") / 512 ))
 rm -f "$OUT"
-xorriso -as mkisofs -quiet -iso-level 3 -V AIOS -R -J \
+xorriso -as mkisofs -quiet -iso-level 3 -V ALETHIC -R -J \
   -append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B "$efi" -appended_part_as_gpt \
   -c boot.catalog \
   -e --interval:appended_partition_2:all:: -no-emul-boot -boot-load-size "$sectors" \

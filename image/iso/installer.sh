@@ -1,4 +1,4 @@
-# Sourced by /init when the "Install AiOS" boot entry was picked. Writes the
+# Sourced by /init when the "Install Alethic" boot entry was picked. Writes the
 # same layout as build/aios-usb.img (ESP | erofs root | data) to a disk; the
 # data partition grows to fill the disk on first boot (systemd-repart).
 # Nothing is written until the user types the disk's name and "yes".
@@ -6,9 +6,9 @@
 
 exec < /dev/console > /dev/console 2>&1
 clear
-echo "================  Install AiOS  ================"
+echo "================  Install Alethic  ================"
 echo
-echo "This writes AiOS to a whole disk. Everything on that disk is erased."
+echo "This writes Alethic to a whole disk. Everything on that disk is erased."
 echo
 
 cdbase=$(basename "$found")
@@ -42,7 +42,7 @@ read -r answer
 
 dev=/dev/$target
 echo
-echo "Writing AiOS to $dev ..."
+echo "Writing Alethic to $dev ..."
 step() { echo "  $1"; dd if="$2" of="$dev" bs=1M seek="$3" conv=fsync 2>/dev/null || fail "writing $1 failed."; }
 # Clear old signatures at the start of the disk first.
 dd if=/dev/zero of="$dev" bs=1M count=8 conv=fsync 2>/dev/null
@@ -53,7 +53,7 @@ step "data partition"  /cd/aios/install/data.bin $((P3 / 2048))
 sync
 
 echo
-echo "Done. AiOS is installed on $dev."
+echo "Done. Alethic is installed on $dev."
 echo "Remove the CD/ISO (in VirtualBox: Devices > Optical Drives > Remove disk),"
 printf "then press Enter to restart. "
 read -r _

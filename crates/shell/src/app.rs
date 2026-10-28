@@ -108,6 +108,7 @@ struct App {
     status_req: Option<u64>,
     recreate_palette: bool,
     wifi: std::sync::mpsc::Sender<crate::wifi::WifiCmd>,
+    launcher: crate::launcher::Launcher,
     /// The pointer is on the top edge or the bar (or just left them).
     bar_hover: bool,
     bar_left_at: Option<Instant>,
@@ -115,7 +116,12 @@ struct App {
     bar_on_top: bool,
 }
 
-pub fn run(paths: Paths, rx: Channel<Msg>, tx: channel::Sender<Msg>) -> Result<(), String> {
+pub fn run(
+    paths: Paths,
+    launcher: crate::launcher::Launcher,
+    rx: Channel<Msg>,
+    tx: channel::Sender<Msg>,
+) -> Result<(), String> {
     let conn = Connection::connect_to_env().map_err(|e| format!("wayland: {e}"))?;
     let (globals, queue) = registry_queue_init(&conn).map_err(|e| format!("wayland: {e}"))?;
     let qh: QueueHandle<App> = queue.handle();
@@ -164,6 +170,7 @@ pub fn run(paths: Paths, rx: Channel<Msg>, tx: channel::Sender<Msg>) -> Result<(
         status_req: None,
         recreate_palette: false,
         wifi,
+        launcher,
         bar_hover: false,
         bar_left_at: None,
         bar_on_top: false,
@@ -368,6 +375,12 @@ impl App {
                         allow,
                     });
                 }
+                Command::Launch(app) => {
+                    let req = actions::launch::LaunchRequest { app, url: None };
+                    if let Err(e) = self.launcher.launch(&req) {
+                        eprintln!("aios-shell: cannot open {}: {e}", app.id());
+                    }
+                }
                 Command::WifiScan => {
                     let _ = self.wifi.send(crate::wifi::WifiCmd::Scan);
                 }
@@ -407,7 +420,7 @@ impl App {
             Ok(id) => self.setup_req = Some(id),
             Err(e) => self
                 .ui
-                .setup_result(format!("Could not reach the AiOS service: {e}")),
+                .setup_result(format!("Could not reach the Alethic service: {e}")),
         }
     }
 

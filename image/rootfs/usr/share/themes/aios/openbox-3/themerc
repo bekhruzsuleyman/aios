@@ -1,4 +1,5 @@
-# AiOS window theme: light, calm, matches the shell. The close, minimise and
+# AiOS window theme: light, calm, matches the shell. labwc 0.7 reads it
+# from <theme>/openbox-3/. The close, minimise and
 # maximise buttons are macOS-style traffic lights (the *-active.svg and
 # *-inactive.svg files next to this one; hover variants show the glyph).
 border.width: 1

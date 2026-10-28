@@ -89,7 +89,7 @@ class VM:
 
     def login(self, timeout=120):
         """Wait for the autologin root shell on ttyS0 and make it script-friendly."""
-        self.wait_for(rb"root@aios[^\n]*[#$] ?", timeout)
+        self.wait_for(rb"root@(?:aios|alethic)[^\n]*[#$] ?", timeout)
         self.write("stty -echo; export PS1='' TERM=dumb; unset PROMPT_COMMAND\n")
         time.sleep(1)
         self.run("true")

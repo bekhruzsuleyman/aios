@@ -56,6 +56,9 @@ pref("termsofuse.bypassNotification", true);
 pref("datareporting.policy.dataSubmissionPolicyBypassNotification", true);
 pref("trailhead.firstrun.didSeeAboutWelcome", true);
 pref("browser.startup.homepage_override.mstone", "ignore");
+// Use the window manager's title bar (traffic lights) instead of tabs in
+// Firefox's own title bar.
+pref("browser.tabs.inTitlebar", 0);
 PREFS
 fi
 # /var is a tmpfs at runtime, so keep the font cache under /usr.

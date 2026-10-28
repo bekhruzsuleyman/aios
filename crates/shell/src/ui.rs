@@ -4,6 +4,7 @@
 use crate::gfx::{self, Theme};
 use crate::text::{Text, TextStyle};
 use crate::wifi::WifiState;
+use actions::launch::App;
 use protocol::{Event, EventMsg, Risk};
 use std::collections::VecDeque;
 use tiny_skia::{Color, Pixmap};
@@ -124,6 +125,10 @@ pub enum Command {
         key: String,
     },
     WifiScan,
+    /// Start an app the user picked from the apps list. The user's own
+    /// pick, so it goes straight to the session launcher (still sandboxed),
+    /// not through the agent.
+    Launch(App),
     WifiConnect {
         path: String,
         name: String,
@@ -165,6 +170,8 @@ pub enum Hit {
     WifiConnect,
     WifiScan,
     WifiClose,
+    /// A row of the apps list (index into `Ui::apps()`).
+    AppRow(usize),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -199,7 +206,17 @@ pub struct Ui {
     pub setup: SetupForm,
     pub wifi: WifiView,
     pub dark: bool,
+    /// Selected row of the apps list.
+    pub app_sel: usize,
 }
+
+/// The apps list in the palette: the app, its name, and the words that
+/// find it when typed.
+pub const APPS: [(App, &str, &[&str]); 3] = [
+    (App::Browser, "Firefox", &["firefox", "browser", "web"]),
+    (App::Editor, "Text Editor", &["text editor", "editor", "mousepad"]),
+    (App::Terminal, "Terminal", &["terminal", "console", "foot"]),
+];
 
 impl Default for Ui {
     fn default() -> Self {
@@ -223,7 +240,46 @@ impl Ui {
             setup: SetupForm::default(),
             wifi: WifiView::default(),
             dark: false,
+            app_sel: 0,
         }
+    }
+
+    /// Apps matching what is typed: all of them when nothing is, else those
+    /// with a name or word that starts with the typed text.
+    pub fn apps(&self) -> Vec<(App, &'static str)> {
+        let q = self.input.trim().to_lowercase();
+        APPS.iter()
+            .filter(|(_, name, words)| {
+                q.is_empty()
+                    || name.to_lowercase().starts_with(&q)
+                    || words.iter().any(|w| w.starts_with(&q))
+            })
+            .map(|(app, name, _)| (*app, *name))
+            .collect()
+    }
+
+    /// The apps list is shown while nothing else needs the space: an idle
+    /// palette, or text that names an app.
+    pub fn apps_visible(&self) -> bool {
+        !self.working()
+            && self.approvals.is_empty()
+            && if self.input.trim().is_empty() {
+                self.request.is_empty() && self.plan.is_empty()
+            } else {
+                !self.apps().is_empty()
+            }
+    }
+
+    fn launch_selected(&mut self, i: usize) -> Vec<Command> {
+        let apps = self.apps();
+        let Some((app, _)) = apps.get(i.min(apps.len().saturating_sub(1))) else {
+            return vec![];
+        };
+        let app = *app;
+        self.input.clear();
+        self.app_sel = 0;
+        self.panel = Panel::Hidden;
+        vec![Command::Launch(app), Command::Redraw]
     }
 
     pub fn theme(&self) -> Theme {
@@ -301,7 +357,7 @@ impl Ui {
         self.link = link;
         if link == Link::Offline && self.working() {
             self.phase = Phase::Failed;
-            self.narration = "Lost the connection to the AiOS service.".into();
+            self.narration = "Lost the connection to the Alethic service.".into();
             self.approvals.clear();
         }
     }
@@ -455,6 +511,9 @@ impl Ui {
                 vec![Command::Redraw]
             }
             Key::Enter => {
+                if self.apps_visible() {
+                    return self.launch_selected(self.app_sel);
+                }
                 let text = self.input.trim().to_string();
                 if text.is_empty() || self.working() {
                     return vec![Command::Redraw];
@@ -463,6 +522,16 @@ impl Ui {
             }
             Key::Backspace => {
                 self.input.pop();
+                self.app_sel = 0;
+                vec![Command::Redraw]
+            }
+            Key::Down | Key::Up if self.apps_visible() => {
+                let n = self.apps().len().max(1);
+                self.app_sel = if key == Key::Down {
+                    (self.app_sel + 1) % n
+                } else {
+                    (self.app_sel + n - 1) % n
+                };
                 vec![Command::Redraw]
             }
             Key::Alt('a') | Key::Alt('d') => self.answer(key == Key::Alt('a')),
@@ -475,6 +544,7 @@ impl Ui {
             Key::Text(t) => {
                 if !self.working() {
                     self.input.push_str(&t);
+                    self.app_sel = 0;
                 }
                 vec![Command::Redraw]
             }
@@ -549,6 +619,7 @@ impl Ui {
                 _ => vec![],
             },
             Hit::Allow => self.answer(true),
+            Hit::AppRow(i) => self.launch_selected(i),
             Hit::Deny => self.answer(false),
             Hit::SetupField(i) => {
                 self.setup.focus = i.min(2);
@@ -972,28 +1043,50 @@ fn draw_ask(
             .max(23.0);
     }
 
-    if ui.request.is_empty() && ui.plan.is_empty() {
+    if ui.apps_visible() {
         y += 14.0;
         gfx::hline(pm, x0, y, w, hair);
         y += 14.0;
-        let hints = [
-            "open browser",
-            "search rust news",
-            "play lofi for late night coding",
-            "note: buy milk",
-            "read todo.txt",
-        ];
-        text.draw(pm, "TRY", x0, y + 1.0, label, th.text_dim, None);
+        text.draw(pm, "APPS", x0, y + 1.0, label, th.text_dim, None);
         y += 20.0;
-        for h in hints {
-            y += text.draw(pm, h, x0, y, row, th.text_dim, Some(w)).max(20.0) + 2.0;
+        let apps = ui.apps();
+        let sel = ui.app_sel.min(apps.len().saturating_sub(1));
+        let row_h = 34.0;
+        for (i, (_, name)) in apps.iter().enumerate() {
+            if i == sel {
+                gfx::rounded(pm, x0 - 8.0, y, w + 16.0, row_h, 9.0, gfx::with_alpha(th.text, 0.06));
+            }
+            // A tile with the app's initial stands in for an icon.
+            let tile = 22.0;
+            let ty = y + (row_h - tile) / 2.0;
+            gfx::rounded(pm, x0, ty, tile, tile, 6.0, gfx::with_alpha(th.accent, 0.16));
+            let initial = &name[..1];
+            let iw = text.measure(initial, row.medium(), None).0;
+            text.draw(pm, initial, x0 + (tile - iw) / 2.0, ty + 3.0, row.medium(), th.accent, None);
+            text.draw(pm, name, x0 + tile + 12.0, y + 8.0, row, th.text, None);
+            if i == sel {
+                let k = "enter";
+                let kw = text.measure(k, label, None).0;
+                text.draw(pm, k, x0 + w - kw, y + 11.0, label, th.text_dim, None);
+            }
+            areas.push(Area {
+                x: x0 - 8.0,
+                y,
+                w: w + 16.0,
+                h: row_h,
+                hit: Hit::AppRow(i),
+            });
+            y += row_h + 2.0;
         }
+        y += 8.0;
+        let hint = "Or ask anything: “search rust news”, “note: buy milk”, “play lofi”";
+        y += text.draw(pm, hint, x0, y, TextStyle::sans(12.0), th.text_dim, Some(w));
         let note = match ui.link {
             Link::Online { ai: Some(false) } => Some((
-                "No AI connected: only these commands work. Alt+S connects one.",
+                "No AI connected: only simple commands work. Alt+S connects one.",
                 th.warn,
             )),
-            Link::Offline => Some(("The AiOS service is not running yet. Retrying…", th.bad)),
+            Link::Offline => Some(("The Alethic service is not running yet. Retrying…", th.bad)),
             _ => None,
         };
         if let Some((n, c)) = note {
@@ -1944,5 +2037,26 @@ mod preview {
             },
         ));
         compose(&ui, &mut text, "5-approval");
+    }
+
+    #[test]
+    fn apps_list_filters_and_launches() {
+        let mut ui = Ui::new();
+        ui.toggle_palette();
+        assert!(ui.apps_visible());
+        assert_eq!(ui.apps().len(), 3);
+        for c in "term".chars() {
+            ui.key(Key::Text(c.to_string()));
+        }
+        assert_eq!(ui.apps(), vec![(App::Terminal, "Terminal")]);
+        assert_eq!(ui.key(Key::Enter), vec![Command::Launch(App::Terminal), Command::Redraw]);
+        assert_eq!(ui.panel, Panel::Hidden);
+        // Text that names no app is a request for the agent.
+        ui.toggle_palette();
+        for c in "find reviews".chars() {
+            ui.key(Key::Text(c.to_string()));
+        }
+        assert!(!ui.apps_visible());
+        assert!(matches!(ui.key(Key::Enter)[0], Command::Submit(_)));
     }
 }

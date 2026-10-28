@@ -234,7 +234,16 @@ pub async fn chat(
     let mut resp = req
         .send()
         .await
-        .map_err(|e| format!("Cannot reach the AI at {}: {e}", s.endpoint))?;
+        .map_err(|e| {
+            if s.endpoint.starts_with("http://127.0.0.1:") {
+                format!(
+                    "The built-in AI is not running. It may still be starting; \
+                     try again in a minute. ({e})"
+                )
+            } else {
+                format!("Cannot reach the AI at {}: {e}", s.endpoint)
+            }
+        })?;
     let status = resp.status();
     if !status.is_success() {
         let text = resp.text().await.unwrap_or_default();
