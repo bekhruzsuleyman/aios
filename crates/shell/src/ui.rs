@@ -8,10 +8,10 @@ use protocol::{Event, EventMsg, Risk};
 use std::collections::VecDeque;
 use tiny_skia::{Color, Pixmap};
 
+/// The name in the top bar, set in the brand face (small caps style).
+pub const BRAND: &str = "ALETHIC";
 /// The top bar surface: the pill, plus room under it for the working pill.
 pub const TOPBAR_HEIGHT: u32 = 84;
-/// The part of the screen the top bar reserves (windows go below it).
-pub const TOPBAR_ZONE: u32 = 48;
 pub const PALETTE_WIDTH: u32 = 640;
 pub const STATUS_WIDTH: u32 = 900;
 pub const STATUS_HEIGHT: u32 = 48;
@@ -729,7 +729,7 @@ pub fn draw_topbar(ui: &Ui, text: &mut Text, width: u32, unix_secs: u64) -> (Pix
     let widths: Vec<f32> = items
         .iter()
         .map(|it| match it {
-            Item::Brand => 14.0 + text.measure("AI · NATIVE OS", brand, None).0,
+            Item::Brand => 14.0 + text.measure(BRAND, brand, None).0,
             Item::Ask => {
                 text.measure("Ask", label, None).0
                     + 8.0
@@ -774,7 +774,7 @@ pub fn draw_topbar(ui: &Ui, text: &mut Text, width: u32, unix_secs: u64) -> (Pix
                 gfx::circle(&mut pm, x + 3.0, cy, 3.0, dot);
                 text.draw(
                     &mut pm,
-                    "AI · NATIVE OS",
+                    BRAND,
                     x + 14.0,
                     cy - 7.0,
                     brand,

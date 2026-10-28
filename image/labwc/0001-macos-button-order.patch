@@ -1,0 +1,62 @@
+--- a/src/ssd/ssd_titlebar.c
++++ b/src/ssd/ssd_titlebar.c
+@@ -91,22 +91,26 @@
+ 		/* Title */
+ 		add_scene_rect(&subtree->parts, LAB_SSD_PART_TITLEBAR, parent,
+ 			width - SSD_BUTTON_WIDTH * SSD_BUTTON_COUNT, theme->title_height,
+-			SSD_BUTTON_WIDTH, 0, color);
+-		/* Buttons */
++			SSD_BUTTON_WIDTH * 3, 0, color);
++		/*
++		 * AiOS: macOS order. Close, minimise and maximise on the left
++		 * (close in the rounded top-left corner); the window menu takes
++		 * the top-right corner.
++		 */
+ 		add_scene_button_corner(&subtree->parts,
+-			LAB_SSD_BUTTON_WINDOW_MENU, LAB_SSD_PART_CORNER_TOP_LEFT, parent,
+-			corner_top_left, menu_button_unpressed, menu_button_hover, 0, view);
++			LAB_SSD_BUTTON_CLOSE, LAB_SSD_PART_CORNER_TOP_LEFT, parent,
++			corner_top_left, close_button_unpressed, close_button_hover, 0, view);
+ 		add_scene_button(&subtree->parts, LAB_SSD_BUTTON_ICONIFY, parent,
+ 			color, iconify_button_unpressed, iconify_button_hover,
+-			width - SSD_BUTTON_WIDTH * 3, view);
++			SSD_BUTTON_WIDTH * 1, view);
+ 		add_scene_button(&subtree->parts, LAB_SSD_BUTTON_MAXIMIZE, parent,
+ 			color, maximize_button_unpressed, maximize_button_hover,
+-			width - SSD_BUTTON_WIDTH * 2, view);
++			SSD_BUTTON_WIDTH * 2, view);
+ 		add_toggled_icon(&subtree->parts, LAB_SSD_BUTTON_MAXIMIZE,
+ 			restore_button_unpressed, restore_button_hover);
+ 		add_scene_button_corner(&subtree->parts,
+-			LAB_SSD_BUTTON_CLOSE, LAB_SSD_PART_CORNER_TOP_RIGHT, parent,
+-			corner_top_right, close_button_unpressed, close_button_hover,
++			LAB_SSD_BUTTON_WINDOW_MENU, LAB_SSD_PART_CORNER_TOP_RIGHT, parent,
++			corner_top_right, menu_button_unpressed, menu_button_hover,
+ 			width - SSD_BUTTON_WIDTH * 1, view);
+ 	} FOR_EACH_END
+ 
+@@ -207,13 +211,13 @@
+ 			case LAB_SSD_BUTTON_ICONIFY:
+ 				if (is_direct_child(part->node, subtree)) {
+ 					wlr_scene_node_set_position(part->node,
+-						width - SSD_BUTTON_WIDTH * 3, 0);
++						SSD_BUTTON_WIDTH * 1, 0);
+ 				}
+ 				continue;
+ 			case LAB_SSD_BUTTON_MAXIMIZE:
+ 				if (is_direct_child(part->node, subtree)) {
+ 					wlr_scene_node_set_position(part->node,
+-						width - SSD_BUTTON_WIDTH * 2, 0);
++						SSD_BUTTON_WIDTH * 2, 0);
+ 				}
+ 				continue;
+ 			case LAB_SSD_PART_CORNER_TOP_RIGHT:
+@@ -287,7 +291,7 @@
+ 
+ 		buffer_width = part->buffer ? part->buffer->width : 0;
+ 		buffer_height = part->buffer ? part->buffer->height : 0;
+-		x = SSD_BUTTON_WIDTH;
++		x = SSD_BUTTON_WIDTH * 3;
+ 		y = (theme->title_height - buffer_height) / 2;
+ 
+ 		if (title_bg_width <= 0) {

@@ -1,6 +1,8 @@
 # AiOS system configuration, shipped read-only as /etc/aios/aios.toml.
-# The AI endpoint is not here: first-run setup writes it to
-# /var/lib/aios/ai.toml (and the key to /var/lib/aios/ai.key, mode 0600).
+# [ai] is the built-in local AI (aios-llm.service, a small model on this
+# machine), used out of the box. Another endpoint set in Settings is written
+# to /var/lib/aios/ai.toml (key in /var/lib/aios/ai.key, mode 0600) and
+# takes precedence.
 
 [paths]
 socket     = "/run/aios/agent.sock"
@@ -16,3 +18,8 @@ url      = ""
 
 [policy]
 default = "ask"
+
+[ai]
+endpoint   = "http://127.0.0.1:8180/v1"
+model      = "aios-local"
+timeout_ms = 300000                      # CPU inference on small machines

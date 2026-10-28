@@ -1,0 +1,49 @@
+[Unit]
+Description=AiOS built-in AI (small local model, OpenAI-compatible API on 127.0.0.1:8180)
+# Only the user's own model on the data partition needs it mounted.
+After=local-fs.target
+ConditionPathExists=/usr/lib/aios/llama/bin/llama-server
+
+[Service]
+Type=simple
+DynamicUser=yes
+# The model: /var/lib/aios/models/aios.gguf when the user installed one (a
+# fine-tuned AiOS model, say), otherwise the one shipped in the image.
+# Without either, the service is skipped.
+ExecCondition=/bin/sh -c 'test -r /usr/share/aios/models/default.gguf -o -r /var/lib/aios/models/aios.gguf'
+ExecStart=/usr/lib/aios/aios-llm
+Restart=on-failure
+RestartSec=3
+Nice=5
+MemoryHigh=75%
+MemoryMax=85%
+
+# Loopback only: the API is for aiosd on this machine.
+IPAddressDeny=any
+IPAddressAllow=localhost
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+PrivateUsers=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources @mount
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=multi-user.target

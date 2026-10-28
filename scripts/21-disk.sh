@@ -73,8 +73,11 @@ SFDISK
   fi
 }
 
-make_image product $B/rootfs.erofs "$CMDLINE_BASE" $B/aios.img
-make_image usb $B/rootfs.erofs "$CMDLINE_BASE" $B/aios-usb.img
-make_image install $B/rootfs.erofs "$CMDLINE_BASE" $B/aios-install.img $B/data-small.img
-make_image test $B/rootfs-test.erofs "$CMDLINE_BASE console=tty0 console=ttyS0,115200" $B/aios-test.img
+# IMAGES limits which images are built (e.g. IMAGES="install test" when only
+# the ISO and the VM tests are needed and disk space is short).
+want() { case " ${IMAGES:-product usb install test} " in *" $1 "*) return 0 ;; esac; rm -f "$2"; return 1; }
+want product $B/aios.img && make_image product $B/rootfs.erofs "$CMDLINE_BASE" $B/aios.img
+want usb $B/aios-usb.img && make_image usb $B/rootfs.erofs "$CMDLINE_BASE" $B/aios-usb.img
+want install $B/aios-install.img && make_image install $B/rootfs.erofs "$CMDLINE_BASE" $B/aios-install.img $B/data-small.img
+want test $B/aios-test.img && make_image test $B/rootfs-test.erofs "$CMDLINE_BASE console=tty0 console=ttyS0,115200" $B/aios-test.img
 sfdisk -d $B/aios-test.img

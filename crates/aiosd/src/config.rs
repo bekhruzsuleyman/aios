@@ -12,6 +12,10 @@ pub struct Config {
     pub search: Search,
     #[serde(default)]
     pub policy: Policy,
+    /// The built-in AI (the local model server), used until first-run
+    /// setup or the user stores another endpoint in `ai.toml`.
+    #[serde(default, rename = "ai")]
+    pub builtin_ai: Option<AiSettings>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -158,12 +162,20 @@ impl Config {
         write_atomic(&self.paths.ai_toml, text.as_bytes(), 0o640)
     }
 
-    /// Current AI settings, or None when not configured. Read on every
-    /// use so first-run setup takes effect without a restart.
+    /// Current AI settings: the user's (`ai.toml`) when set, otherwise the
+    /// built-in local AI, otherwise None. Read on every use so first-run
+    /// setup takes effect without a restart.
     pub fn ai(&self) -> Option<(AiSettings, String)> {
+        self.user_ai().or_else(|| {
+            let s = self.builtin_ai.clone()?;
+            usable(&s).then(|| (s, String::new()))
+        })
+    }
+
+    fn user_ai(&self) -> Option<(AiSettings, String)> {
         let text = std::fs::read_to_string(&self.paths.ai_toml).ok()?;
         let s: AiSettings = toml::from_str(&text).ok()?;
-        if s.endpoint.trim().is_empty() || s.model.trim().is_empty() {
+        if !usable(&s) {
             return None;
         }
         let key = std::fs::read_to_string(&self.paths.ai_key)
@@ -171,6 +183,10 @@ impl Config {
             .unwrap_or_default();
         Some((s, key))
     }
+}
+
+fn usable(s: &AiSettings) -> bool {
+    !s.endpoint.trim().is_empty() && !s.model.trim().is_empty()
 }
 
 fn write_atomic(path: &Path, data: &[u8], mode: u32) -> Result<(), String> {
@@ -204,6 +220,27 @@ mod tests {
         assert_eq!(cfg.paths.approve, PathBuf::from("/run/aios/approve.sock"));
         assert_eq!(cfg.search.provider, Provider::BrowserFallback);
         assert_eq!(cfg.policy.default, "ask");
+        let b = cfg.builtin_ai.as_ref().unwrap();
+        assert_eq!(b.endpoint, "http://127.0.0.1:8180/v1");
+    }
+
+    #[test]
+    fn builtin_ai_until_the_user_sets_one() {
+        let dir = std::env::temp_dir().join(format!("aios-cfg-builtin-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let mut cfg = Config::parse(include_str!("../../../config/aios.toml"), false).unwrap();
+        cfg.paths.ai_toml = dir.join("ai.toml");
+        cfg.paths.ai_key = dir.join("ai.key");
+        let (s, key) = cfg.ai().unwrap();
+        assert_eq!(s, cfg.builtin_ai.clone().unwrap());
+        assert_eq!(key, "");
+        let user = AiSettings {
+            endpoint: "https://api.example.com/v1".into(),
+            model: "m".into(),
+            timeout_ms: 1000,
+        };
+        cfg.save_ai(&user, "k").unwrap();
+        assert_eq!(cfg.ai(), Some((user, "k".to_string())));
     }
 
     #[test]
@@ -222,6 +259,7 @@ mod tests {
         let mut cfg = Config::parse(include_str!("../../../config/aios.toml"), false).unwrap();
         cfg.paths.ai_toml = dir.join("ai.toml");
         cfg.paths.ai_key = dir.join("ai.key");
+        cfg.builtin_ai = None;
         assert!(cfg.ai().is_none());
         let s = AiSettings {
             endpoint: "http://10.0.2.2:8081/v1".into(),

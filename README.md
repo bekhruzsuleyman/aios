@@ -16,7 +16,7 @@ scripts/22-run-qemu.sh build/aios.img        # boot it (UEFI, QEMU)
 ```
 
 ## Using it
-Press **Super+Space** to open the palette and type a request. These five commands always work, even with no AI connected:
+Press **Super+Space** (the Windows key and Space; **Alt+Space** also works, which helps inside a VM where Windows keeps the Windows key) to open the palette and type a request. These five commands always work, even with no AI connected:
 
 | Command | What happens |
 |---|---|

@@ -12,7 +12,7 @@ id aios >/dev/null 2>&1 || useradd -u 1000 -m -d /home/aios -s /bin/sh -G video,
 id aiosd >/dev/null 2>&1 || useradd -r -G aios -d /nonexistent -s /usr/sbin/nologin aiosd
 passwd -l aios >/dev/null
 
-for u in seatd.service systemd-networkd.service systemd-resolved.service aios-session.service aiosd.service; do
+for u in seatd.service systemd-networkd.service systemd-resolved.service aios-session.service aiosd.service aios-llm.service; do
   [ -e "/usr/lib/systemd/system/$u" ] && systemctl enable "$u"
 done
 systemctl set-default graphical.target

@@ -40,6 +40,9 @@ use smithay_client_toolkit::{
 use std::path::PathBuf;
 use std::sync::Mutex;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+
+/// How long the top bar stays up after the pointer leaves it.
+const BAR_HIDE_DELAY: Duration = Duration::from_millis(600);
 use tiny_skia::Pixmap;
 use tracer::Tracer;
 
@@ -57,6 +60,9 @@ pub enum Msg {
 enum Kind {
     Backdrop,
     Topbar,
+    /// A one-pixel strip along the top edge, always above windows: the
+    /// pointer touching it brings the top bar up.
+    Edge,
     Palette,
     Status,
 }
@@ -102,6 +108,11 @@ struct App {
     status_req: Option<u64>,
     recreate_palette: bool,
     wifi: std::sync::mpsc::Sender<crate::wifi::WifiCmd>,
+    /// The pointer is on the top edge or the bar (or just left them).
+    bar_hover: bool,
+    bar_left_at: Option<Instant>,
+    /// The top bar is in the Top layer (above windows), not Bottom.
+    bar_on_top: bool,
 }
 
 pub fn run(paths: Paths, rx: Channel<Msg>, tx: channel::Sender<Msg>) -> Result<(), String> {
@@ -153,9 +164,13 @@ pub fn run(paths: Paths, rx: Channel<Msg>, tx: channel::Sender<Msg>) -> Result<(
         status_req: None,
         recreate_palette: false,
         wifi,
+        bar_hover: false,
+        bar_left_at: None,
+        bar_on_top: false,
     };
     app.create(Kind::Backdrop, &qh);
     app.create(Kind::Topbar, &qh);
+    app.create(Kind::Edge, &qh);
     app.create(Kind::Status, &qh);
 
     handle
@@ -197,7 +212,10 @@ impl App {
         let surface = self.compositor.create_surface(qh);
         let (layer, ns) = match kind {
             Kind::Backdrop => (Layer::Background, "aios-backdrop"),
-            Kind::Topbar => (Layer::Top, "aios-topbar"),
+            // Below windows, so a window over it hides it; raised by
+            // update_bar_layer().
+            Kind::Topbar => (Layer::Bottom, "aios-topbar"),
+            Kind::Edge => (Layer::Top, "aios-topbar-edge"),
             Kind::Palette => (Layer::Overlay, "aios-palette"),
             Kind::Status => (Layer::Top, "aios-status"),
         };
@@ -213,7 +231,13 @@ impl App {
             Kind::Topbar => {
                 layer.set_anchor(Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
                 layer.set_size(0, ui::TOPBAR_HEIGHT);
-                layer.set_exclusive_zone(ui::TOPBAR_ZONE as i32);
+                // No reserved space: windows may cover the bar.
+                layer.set_exclusive_zone(0);
+            }
+            Kind::Edge => {
+                layer.set_anchor(Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
+                layer.set_size(0, 1);
+                layer.set_exclusive_zone(-1);
             }
             Kind::Palette => {
                 // No anchor: centred by the compositor.
@@ -406,6 +430,7 @@ impl App {
                 log_key_to_frame(&self.tracer);
             }
         }
+        self.update_bar_layer();
         for i in 0..self.surfaces.len() {
             let s = &self.surfaces[i];
             if s.configured && s.dirty && !s.frame_pending {
@@ -431,6 +456,10 @@ impl App {
                 }
             }
             Kind::Topbar => ui::draw_topbar(&self.ui, &mut self.text, w, unix_now()),
+            Kind::Edge => match Pixmap::new(w.max(1), 1) {
+                Some(p) => (p, Vec::new()),
+                None => return,
+            },
             Kind::Status => (ui::draw_status(&self.ui, &mut self.text), Vec::new()),
             Kind::Palette => {
                 let (p, areas) = ui::draw_palette(&self.ui, &mut self.text);
@@ -481,6 +510,47 @@ impl App {
         s.areas = areas;
         s.dirty = false;
         s.frame_pending = true;
+    }
+
+    /// The top bar sits under windows and comes above them while the
+    /// pointer is on the top edge or on the bar, while a task runs (its
+    /// working pill and approvals hang under the bar) and while the palette
+    /// is open.
+    fn update_bar_layer(&mut self) {
+        if let Some(t) = self.bar_left_at {
+            if t.elapsed() >= BAR_HIDE_DELAY {
+                self.bar_left_at = None;
+                self.bar_hover = false;
+            }
+        }
+        let top = self.bar_hover || self.ui.working() || self.ui.panel != Panel::Hidden;
+        if top == self.bar_on_top {
+            return;
+        }
+        self.bar_on_top = top;
+        if let Some(s) = self.surfaces.iter().find(|s| s.kind == Kind::Topbar) {
+            s.layer.set_layer(if top { Layer::Top } else { Layer::Bottom });
+            s.layer.commit();
+        }
+    }
+
+    fn pointer_crossing(&mut self, surface: &wl_surface::WlSurface, entered: bool) {
+        let Some(kind) = self.index_of(surface).map(|i| self.surfaces[i].kind) else {
+            return;
+        };
+        if !matches!(kind, Kind::Edge | Kind::Topbar) {
+            return;
+        }
+        if entered {
+            // Entering the bar itself only counts once it is up: under a
+            // window the bar never gets the pointer anyway.
+            if kind == Kind::Edge || self.bar_on_top {
+                self.bar_hover = true;
+                self.bar_left_at = None;
+            }
+        } else if self.bar_hover {
+            self.bar_left_at = Some(Instant::now());
+        }
     }
 
     fn index_of(&self, surface: &wl_surface::WlSurface) -> Option<usize> {
@@ -724,6 +794,11 @@ impl PointerHandler for App {
         events: &[PointerEvent],
     ) {
         for event in events {
+            match event.kind {
+                PointerEventKind::Enter { .. } => self.pointer_crossing(&event.surface, true),
+                PointerEventKind::Leave { .. } => self.pointer_crossing(&event.surface, false),
+                _ => {}
+            }
             let PointerEventKind::Press { .. } = event.kind else {
                 continue;
             };

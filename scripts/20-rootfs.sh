@@ -49,6 +49,30 @@ if [ -f "$DL/InstrumentSerif-Italic.ttf" ]; then
   mkdir -p "$F"
   cp "$DL"/InstrumentSerif-*.ttf "$DL/OFL.txt" "$F/"
 fi
+# labwc with the macOS button order (scripts/16-labwc.sh), over the package's.
+if [ -x build/labwc/labwc ]; then
+  install -m 0755 build/labwc/labwc "$EXTRA/usr/bin/labwc"
+  echo "including patched labwc"
+fi
+# Built-in AI: llama-server (scripts/15-llama.sh) and the model named in
+# $DL/models/DEFAULT (checked against $DL/models/SHA256SUMS; see
+# docs/DOWNLOADS.md).
+if [ -x build/llama/bin/llama-server ]; then
+  mkdir -p "$EXTRA/usr/lib/aios/llama"
+  cp -a build/llama/bin build/llama/lib "$EXTRA/usr/lib/aios/llama/"
+  echo "including llama-server $(cat build/llama/VERSION)"
+fi
+if [ -f "$DL/models/DEFAULT" ]; then
+  m=$(cat "$DL/models/DEFAULT")
+  (cd "$DL/models" && grep " $m\$" SHA256SUMS | sha256sum -c --quiet)
+  mkdir -p "$EXTRA/usr/share/aios/models"
+  cp "$DL/models/$m" "$EXTRA/usr/share/aios/models/default.gguf"
+  echo "$m" > "$EXTRA/usr/share/aios/models/default.name"
+  cp "$DL/models/LICENSE.Qwen3-upstream.txt" "$EXTRA/usr/share/aios/models/LICENSE"
+  echo "including model $m"
+else
+  echo "warning: no model in $DL/models; the built-in AI will not start" >&2
+fi
 for bin in aiosd aios-shell; do
   if [ -x "target/release/$bin" ]; then
     install -m 0755 "target/release/$bin" "$EXTRA/usr/bin/$bin"
@@ -59,6 +83,15 @@ done
 # 2. Root filesystem tree.
 mkosi -C "$SRC" --output-dir="$ROOT/build" --cache-dir="$ROOT/build/mkosi-cache" \
   --extra-tree="$ROOT/$EXTRA" --force build
+
+# Binaries built outside the package manager must find all their libraries.
+for f in build/rootfs/usr/bin/labwc build/rootfs/usr/lib/aios/llama/bin/*; do
+  [ -f "$f" ] || continue
+  if chroot build/rootfs ldd "${f#build/rootfs}" 2>&1 | grep "not found"; then
+    echo "${f#build/rootfs}: missing libraries in the image (add the package to mkosi.conf)" >&2
+    exit 1
+  fi
+done
 
 # 3. Test variant: same tree plus an autologin root shell on ttyS0 so tests
 #    can run commands inside the VM. Never shipped.

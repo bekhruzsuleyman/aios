@@ -1,0 +1,21 @@
+#!/bin/sh
+# Starts the built-in AI for aios-llm.service. Swapping the model needs no
+# rebuild: a GGUF file at /var/lib/aios/models/aios.gguf replaces the one
+# shipped in the image.
+set -eu
+model=/usr/share/aios/models/default.gguf
+[ -r /var/lib/aios/models/aios.gguf ] && model=/var/lib/aios/models/aios.gguf
+threads=$(nproc)
+[ "$threads" -gt 4 ] && threads=4
+# --jinja: the model's own chat template, which carries the tool calls.
+# enable_thinking false: answer directly (thinking takes minutes on a CPU,
+# and Qwen3 plans tool calls well without it).
+# --no-repack and --cache-ram 0: about half the memory, at the same speed
+# (measured with Qwen3 1.7B: 570 MB besides the mapped model file).
+exec /usr/lib/aios/llama/bin/llama-server \
+  --model "$model" --alias aios-local \
+  --host 127.0.0.1 --port 8180 \
+  --ctx-size 4096 --parallel 1 --threads "$threads" \
+  --jinja --chat-template-kwargs '{"enable_thinking":false}' \
+  --no-repack --cache-ram 0 \
+  --no-webui

@@ -14,10 +14,14 @@
   <desktops number="1" />
   <placement><policy>center</policy></placement>
   <keyboard>
-    <!-- Only these three bindings exist; defaults are not loaded. -->
+    <!-- Only these bindings exist; defaults are not loaded. Super is the
+         Windows/Cmd key. Inside a VM on Windows, Windows keeps the Super
+         key for itself, so each Super binding has an Alt twin. -->
     <keybind key="W-space"><action name="Execute" command="aios-shell --toggle-palette" /></keybind>
+    <keybind key="A-space"><action name="Execute" command="aios-shell --toggle-palette" /></keybind>
     <keybind key="A-F4"><action name="Close" /></keybind>
     <keybind key="W-Tab"><action name="NextWindow" /></keybind>
+    <keybind key="A-Tab"><action name="NextWindow" /></keybind>
   </keyboard>
   <mouse>
     <default />
