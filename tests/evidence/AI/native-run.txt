@@ -1,0 +1,13 @@
+== save a note titled Shopping with milk and eggs
+{"ts_ns":6649186934,"task_id":"15f9a697-b945-4aca-9492-9e7adca9362a","seq":4,"type":"plan_created","steps":[{"id":"s1","title":"Save a note “Shopping with milk and eggs”","action":"notes.create","args":{"body":"Shopping with milk and eggs","title":"Shopping with milk and eggs"}}]}
+{"ts_ns":6649356318,"task_id":"15f9a697-b945-4aca-9492-9e7adca9362a","seq":9,"type":"result","summary":"Saved note shopping-with-milk-and-eggs.md"}
+SUMMARY {"approvals_requested":0,"cancel_latency_ms":null,"forged_approvals":[],"steps_failed":0,"task_id":"15f9a697-b945-4aca-9492-9e7adca9362a","terminal":{"summary":"Saved note shopping-with-milk-and-eggs.md","type":"result"},"total_ms":6649.757706}
+== what is the capital of Japan?
+{"ts_ns":7554483036,"task_id":"cd7ad621-fa9e-4665-ae53-21094aa65e2d","seq":4,"type":"result","summary":"The capital of Japan is Tokyo."}
+SUMMARY {"approvals_requested":0,"cancel_latency_ms":null,"forged_approvals":[],"steps_failed":0,"task_id":"cd7ad621-fa9e-4665-ae53-21094aa65e2d","terminal":{"summary":"The capital of Japan is Tokyo.","type":"result"},"total_ms":899.352812}
+== find reviews of the framework laptop 13
+{"ts_ns":9807857757,"task_id":"7943fbdf-74cf-4c14-8a69-e56469ee5545","seq":4,"type":"plan_created","steps":[{"id":"s1","title":"Search the web for “reviews of the framework laptop 13”","action":"web.search","args":{"query":"reviews of the framework laptop 13"}}]}
+{"ts_ns":9808045716,"task_id":"7943fbdf-74cf-4c14-8a69-e56469ee5545","seq":9,"type":"error","message":"desktop launcher unavailable: No such file or directory (os error 2)"}
+SUMMARY {"approvals_requested":0,"cancel_latency_ms":null,"forged_approvals":[],"steps_failed":1,"task_id":"7943fbdf-74cf-4c14-8a69-e56469ee5545","terminal":{"message":"desktop launcher unavailable: No such file or directory (os error 2)","type":"error"},"total_ms":2249.682316}
+== notes
+build/dev-data/notes/shopping-with-milk-and-eggs.md

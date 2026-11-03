@@ -1,0 +1,6 @@
+{
+  "accel": "tcg (emulated)",
+  "llm_health": "{\"status\":\"ok\"}",
+  "llm_service": "MainPID=245\nActiveState=active\n1607416 /usr/lib/aios/llama/bin/llama-server --model /usr/share/aios/models/default.gguf --alias aios-local --host 127.0",
+  "task": "skipped: no KVM (see tests/boot/image_ai_native.sh)"
+}

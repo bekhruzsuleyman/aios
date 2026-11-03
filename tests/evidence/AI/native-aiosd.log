@@ -1,0 +1,27 @@
+aiosd: sandbox: landlock fully_enforced, seccomp on
+aiosd: listening on /tmp/aios-native-xdg/aios/agent.sock and /tmp/aios-native-xdg/aios/approve.sock (uids [0])
+task 15f9a697-b945-4aca-9492-9e7adca9362a timeline:
+stage                        ms      cum ms
+router                    0.001       0.001
+ai.first_byte          4021.195    4021.196
+ai.stream              6649.031   10670.227
+ai.plan                6649.152   17319.379
+broker.decide             0.098   17319.477
+action:notes.create       0.035   17319.512
+
+task cd7ad621-fa9e-4665-ae53-21094aa65e2d timeline:
+stage                  ms      cum ms
+router              0.001       0.001
+ai.first_byte     313.356     313.357
+ai.stream         898.587    1211.945
+ai.plan           898.700    2110.644
+
+task 7943fbdf-74cf-4c14-8a69-e56469ee5545 timeline:
+stage                      ms      cum ms
+router                  0.001       0.001
+ai.first_byte         363.257     363.258
+ai.stream            2249.136    2612.395
+ai.plan              2249.243    4861.638
+broker.decide           0.073    4861.711
+action:web.search       0.087    4861.798
+
